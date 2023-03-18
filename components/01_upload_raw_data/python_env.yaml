@@ -1,0 +1,15 @@
+name: upload_raw_data
+
+# Python version required to run the project.
+python: "3.9.13"
+
+# Dependencies required to build packages. This field is optional.
+build_dependencies:
+  - pip==23.0.1
+
+# Dependencies required to run the project.
+dependencies:
+  - mlflow==2.2.2
+  - pandas==1.5.3
+  - google-cloud-storage==2.7.0
+  - python-decouple==3.8

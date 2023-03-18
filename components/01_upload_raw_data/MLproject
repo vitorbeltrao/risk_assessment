@@ -1,0 +1,6 @@
+name: upload_raw_data
+conda_env: python_env.yaml
+
+entry_points:
+  main:
+    command: "python upload_raw_data.py"
