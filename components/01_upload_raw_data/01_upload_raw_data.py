@@ -7,9 +7,15 @@ Date: March/2023
 '''
 
 # import necessary packages
+import os
 import logging
 import pandas as pd
 from google.cloud import storage
+from decouple import config
+
+# config
+# key code for managing the entire infrastructure
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config('JSON_KEY')
 
 def upload_to_storage(
         bucket_name: str,
