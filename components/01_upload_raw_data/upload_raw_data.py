@@ -8,6 +8,7 @@ Date: March/2023
 
 # import necessary packages
 import os
+import sys
 import logging
 import pandas as pd
 from google.cloud import storage
@@ -18,14 +19,23 @@ logging.basicConfig(
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
-# config
-BUCKET_NAME = config('BUCKET_NAME')
-DESTINATION_TRAIN_BLOB_PATH = config('DESTINATION_TRAIN_BLOB_PATH')
-DESTINATION_TEST_BLOB_PATH = config('DESTINATION_TEST_BLOB_PATH')
-TRAIN_DATA_FOLDER_PATH = config('TRAIN_DATA_FOLDER_PATH')
-TEST_DATA_FOLDER_PATH = config('TEST_DATA_FOLDER_PATH')
+# # config
+# BUCKET_NAME = config('BUCKET_NAME')
+# DESTINATION_TRAIN_BLOB_PATH = config('DESTINATION_TRAIN_BLOB_PATH')
+# DESTINATION_TEST_BLOB_PATH = config('DESTINATION_TEST_BLOB_PATH')
+# TRAIN_DATA_FOLDER_PATH = config('TRAIN_DATA_FOLDER_PATH')
+# TEST_DATA_FOLDER_PATH = config('TEST_DATA_FOLDER_PATH')
 # key code for managing the entire infrastructure
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config('JSON_KEY')
+# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config('JSON_KEY')
+
+# config
+BUCKET_NAME = sys.argv[1]
+DESTINATION_TRAIN_BLOB_PATH = sys.argv[2]
+DESTINATION_TEST_BLOB_PATH = sys.argv[3]
+TRAIN_DATA_FOLDER_PATH = sys.argv[4]
+TEST_DATA_FOLDER_PATH = sys.argv[5]
+# key code for managing the entire infrastructure
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/risk-assessment-380822-38a40f93abec.json'
 
 
 def import_data(file_path: str) -> pd.DataFrame:

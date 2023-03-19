@@ -3,4 +3,11 @@ conda_env: conda.yaml
 
 entry_points:
   main:
-    command: "python upload_raw_data.py"
+    parameters:
+      BUCKET_NAME: {type: str, default: 'risk_assessment_storage'}
+      DESTINATION_TRAIN_BLOB_PATH: {type: str, default: 'raw/train_data/'}
+      DESTINATION_TEST_BLOB_PATH: {type: str, default: 'raw/test_data/'}
+      TRAIN_DATA_FOLDER_PATH: {type: str, default: 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/train_data'}
+      TEST_DATA_FOLDER_PATH: {type: str, default: 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/test_data'}
+
+    command: "python upload_raw_data.py {BUCKET_NAME} {DESTINATION_TRAIN_BLOB_PATH} {DESTINATION_TEST_BLOB_PATH} {TRAIN_DATA_FOLDER_PATH} {TEST_DATA_FOLDER_PATH}"
