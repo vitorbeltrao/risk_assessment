@@ -132,3 +132,5 @@ dmypy.json
 *.json
 /train_data
 /test_data
+/mlruns
+/outputs
