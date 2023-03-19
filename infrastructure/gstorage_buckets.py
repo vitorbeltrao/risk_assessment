@@ -7,12 +7,11 @@ Date: March/2023
 
 # import necessary packages
 import os
-from decouple import config
 from google.cloud import storage
 
 # config
 # key code for managing the entire infrastructure
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config('JSON_KEY')
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/risk-assessment-380822-38a40f93abec.json'
 
 
 def create_bucket(

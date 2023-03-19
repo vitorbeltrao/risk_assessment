@@ -7,5 +7,3 @@ dependencies:
   - mlflow=2.2.2
   - pandas=1.5.3
   - google-cloud-storage=2.7.0
-  - pip:
-    - python-decouple==3.8
