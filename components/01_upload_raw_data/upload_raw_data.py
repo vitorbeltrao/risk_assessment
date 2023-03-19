@@ -35,7 +35,7 @@ DESTINATION_TEST_BLOB_PATH = sys.argv[3]
 TRAIN_DATA_FOLDER_PATH = sys.argv[4]
 TEST_DATA_FOLDER_PATH = sys.argv[5]
 # key code for managing the entire infrastructure
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/risk-assessment-380822-38a40f93abec.json'
+GOOGLE_APPLICATION_CREDENTIALS = sys.argv[6]
 
 
 def import_data(file_path: str) -> pd.DataFrame:
