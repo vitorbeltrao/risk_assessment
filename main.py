@@ -15,7 +15,7 @@ from omegaconf import DictConfig
 
 _steps = [
     'upload_raw_data',
-    # 'upload_trusted_data',
+    'upload_trusted_data',
     # 'transform_trusted_data',
     # 'basic_clean',
     # 'data_check',
@@ -41,6 +41,10 @@ def go(config: DictConfig):
 
     if 'upload_raw_data' in active_steps:
         project_uri = f"{config['main']['components_repository']}/01_upload_raw_data"
+        mlflow.run(project_uri)
+
+    if 'upload_trusted_data' in active_steps:
+        project_uri = f"{config['main']['components_repository']}/02_upload_trusted_data"
         mlflow.run(project_uri)
 
 
