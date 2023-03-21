@@ -1,0 +1,12 @@
+name: upload_trusted_data
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      BUCKET_NAME: {type: str, default: 'risk_assessment_storage'}
+      DESTINATION_RAW_BLOB_PATH: {type: str, default: 'raw/'}
+      COMPONENT_CURRENT_DIRECTORY: {type: str, default: 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/components/02_upload_trusted_data'}
+      DESTINATION_TRUSTED_BLOB_PATH: {type: str, default: 'trusted/'}
+
+    command: "python upload_trusted_data.py {BUCKET_NAME} {DESTINATION_RAW_BLOB_PATH} {COMPONENT_CURRENT_DIRECTORY} {DESTINATION_TRUSTED_BLOB_PATH}"
