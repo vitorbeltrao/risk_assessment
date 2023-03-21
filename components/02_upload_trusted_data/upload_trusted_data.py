@@ -120,7 +120,7 @@ def transform_raw_data(
         type='dataset',
         description='Raw dataset transformed with some necessary things to start DS pipeline')
 
-    pdf.to_csv(name_set, index=False)
+    pdf.to_csv(name_set + '.csv', index=False)
     artifact.add_file(name_set + '.csv')
     run.log_artifact(artifact)
     logging.info(f'Uploaded {name_set} to wandb: SUCCESS')
