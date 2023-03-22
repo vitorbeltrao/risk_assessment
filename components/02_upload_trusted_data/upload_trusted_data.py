@@ -144,8 +144,9 @@ if __name__ == "__main__":
 
     for folder, name in zip(['train_data/', 'test_data/'], ['train_set.csv', 'test_set.csv']):
         # upload train and test data to trusted folder in the bucket
+        component_current_directory = [COMPONENT_CURRENT_DIRECTORY]
         download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder)
-        trusted_train_set = transform_raw_data(COMPONENT_CURRENT_DIRECTORY)
+        trusted_train_set = transform_raw_data(component_current_directory)
         upload_to_storage(BUCKET_NAME, trusted_train_set, DESTINATION_TRUSTED_BLOB_PATH + folder + name)
         upload_to_wandb(name, trusted_train_set)
 
