@@ -136,11 +136,11 @@ def upload_to_wandb(name_set: str, data: pd.DataFrame) -> None:
     data.to_csv(name_set, index=False)
     artifact.add_file(name_set)
     run.log_artifact(artifact)
-    logging.info(f'Uploaded {name_set} to wandb: SUCCESS')
+    logging.info(f'Uploaded {name_set} to wandb: SUCCESS\n')
 
 
 if __name__ == "__main__":
-    logging.info('About to start executing of the transform function')
+    logging.info('About to start executing of the transform function\n')
 
     for folder, name in zip(['train_data/', 'test_data/'], ['train_set.csv', 'test_set.csv']):
         # upload train and test data to trusted folder in the bucket
@@ -156,4 +156,4 @@ if __name__ == "__main__":
                 if each_filename.endswith('.csv'):
                     os.remove(each_filename)
 
-    logging.info('Done executing the transform function/n')
+    logging.info('\nDone executing the transform function')
