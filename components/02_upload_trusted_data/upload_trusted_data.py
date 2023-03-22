@@ -39,6 +39,9 @@ def download_raw_data(
 
     :param destination_raw_blob_path: (str)
     Destination folder from which you want to download the raw data
+
+    :param component_current_directory: (str)
+    Current component path "02" to get some files (.csv) and do some actions
     '''
     # data download (extract)
     logging.info('Start the download on raw data: SUCCESS')
@@ -151,13 +154,11 @@ if __name__ == "__main__":
         download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder, COMPONENT_CURRENT_DIRECTORY)
         trusted_train_set = transform_raw_data(component_current_directory)
         upload_to_storage(BUCKET_NAME, trusted_train_set, DESTINATION_TRUSTED_BLOB_PATH + folder + name)
-        # upload_to_wandb(name, trusted_train_set)
+        upload_to_wandb(name, trusted_train_set)
 
         for directory in component_current_directory:
-            print(directory)
             filenames = os.listdir(directory)
             for each_filename in filenames:
-                print(each_filename)
                 if each_filename.endswith('.csv'):
                     os.remove(directory + '/' + each_filename)
 
