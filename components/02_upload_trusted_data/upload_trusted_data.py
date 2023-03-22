@@ -75,10 +75,11 @@ def transform_raw_data(component_current_directory: str) -> pd.DataFrame:
             'number_of_employees',
             'exited'])
     for directory in data_directory:
+        print(directory)
         filenames = os.listdir(directory)
         for each_filename in filenames:
-            # some files in this directory are not .csv
-            if each_filename.endswith('.csv'):
+            print(each_filename)
+            if each_filename.endswith('.csv'): # some files in this directory are not .csv
                 current_pdf = pd.read_csv(directory + '/' + each_filename)
                 pdf = pdf.append(current_pdf).reset_index(drop=True)
 
@@ -152,7 +153,7 @@ if __name__ == "__main__":
         download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder, COMPONENT_CURRENT_DIRECTORY)
         trusted_train_set = transform_raw_data(component_current_directory)
         upload_to_storage(BUCKET_NAME, trusted_train_set, DESTINATION_TRUSTED_BLOB_PATH + folder + name)
-        upload_to_wandb(name, trusted_train_set)
+        # upload_to_wandb(name, trusted_train_set)
 
         for directory in component_current_directory:
             filenames = os.listdir(directory)
