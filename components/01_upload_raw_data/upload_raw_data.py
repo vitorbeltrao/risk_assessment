@@ -98,4 +98,4 @@ if __name__ == "__main__":
                 DESTINATION_TEST_BLOB_PATH +
                 each_filename)
 
-    logging.info('\n', 'Done executing the functions')
+    logging.info('Done executing the functions')

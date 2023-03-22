@@ -51,7 +51,7 @@ def download_raw_data(
 
     for file in file_names:
         raw_blob = bucket.blob(destination_raw_blob_path + str(file))
-        raw_blob.download_to_filename(component_current_directory)
+        raw_blob.download_to_filename(data_directory)
     logging.info('Finish the download on raw data: SUCCESS')
 
 
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     for folder, name in zip(['train_data/', 'test_data/'], ['train_set.csv', 'test_set.csv']):
         # upload train and test data to trusted folder in the bucket
         component_current_directory = [COMPONENT_CURRENT_DIRECTORY]
-        download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder, component_current_directory)
+        download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder, COMPONENT_CURRENT_DIRECTORY)
         trusted_train_set = transform_raw_data(component_current_directory)
         upload_to_storage(BUCKET_NAME, trusted_train_set, DESTINATION_TRUSTED_BLOB_PATH + folder + name)
         upload_to_wandb(name, trusted_train_set)
@@ -160,4 +160,4 @@ if __name__ == "__main__":
                 if each_filename.endswith('.csv'):
                     os.remove(each_filename)
 
-    logging.info('\n', 'Done executing the transform function')
+    logging.info('Done executing the transform function')
