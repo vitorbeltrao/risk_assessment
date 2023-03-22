@@ -42,7 +42,7 @@ def download_raw_data(
     '''
     # data download (extract)
     logging.info('Start the download on raw data: SUCCESS')
-    data_directory = component_current_directory
+    # data_directory = component_current_directory
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
 
@@ -51,7 +51,7 @@ def download_raw_data(
 
     for file in file_names:
         raw_blob = bucket.blob(destination_raw_blob_path + str(file))
-        raw_blob.download_to_filename(data_directory + str(file))
+        raw_blob.download_to_filename(file)
     logging.info('Finish the download on raw data: SUCCESS')
 
 
