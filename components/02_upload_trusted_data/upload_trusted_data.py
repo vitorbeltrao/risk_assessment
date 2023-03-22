@@ -23,7 +23,7 @@ logging.basicConfig(
 # config
 BUCKET_NAME = sys.argv[1]
 DESTINATION_RAW_BLOB_PATH = sys.argv[2]
-COMPONENT_CURRENT_DIRECTORY = list(sys.argv[3])
+COMPONENT_CURRENT_DIRECTORY = sys.argv[3]
 DESTINATION_TRUSTED_BLOB_PATH = sys.argv[4]
 # key code for managing the entire infrastructure
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/risk-assessment-380822-38a40f93abec.json'
