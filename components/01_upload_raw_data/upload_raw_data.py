@@ -50,7 +50,7 @@ def import_data(file_path: str) -> pd.DataFrame:
 def upload_to_storage(
         bucket_name: str,
         data: pd.DataFrame,
-        destination_blob_path: str) -> logging:
+        destination_blob_path: str) -> None:
     '''Function that uploads a dataframe into a google storage bucket
 
     :param bucket_name: (str)
@@ -68,7 +68,7 @@ def upload_to_storage(
     blob.upload_from_string(data.to_csv())
 
     return logging.info(
-        'Loading the NEW PARQUET FILE into the bucket: SUCCESS')
+        'Loading the NEW CSV FILE into the bucket: SUCCESS')
 
 
 if __name__ == "__main__":

@@ -134,3 +134,4 @@ dmypy.json
 /test_data
 /mlruns
 /outputs
+wandb/
