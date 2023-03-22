@@ -159,6 +159,6 @@ if __name__ == "__main__":
             for each_filename in filenames:
                 print(each_filename)
                 if each_filename.endswith('.csv'):
-                    os.remove(each_filename)
+                    os.remove(directory + '/' + each_filename)
 
     logging.info('Done executing the script')
