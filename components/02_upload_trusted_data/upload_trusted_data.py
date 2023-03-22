@@ -42,7 +42,7 @@ def download_raw_data(
     '''
     # data download (extract)
     logging.info('Start the download on raw data: SUCCESS')
-    # data_directory = component_current_directory
+    data_directory = component_current_directory
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
 
@@ -51,7 +51,7 @@ def download_raw_data(
 
     for file in file_names:
         raw_blob = bucket.blob(destination_raw_blob_path + str(file))
-        raw_blob.download_to_filename(file)
+        raw_blob.download_to_filename(data_directory + file)
     logging.info('Finish the download on raw data: SUCCESS')
 
 
@@ -144,7 +144,7 @@ def upload_to_wandb(name_set: str, data: pd.DataFrame) -> None:
 
 
 if __name__ == "__main__":
-    logging.info('About to start executing of the transform function\n')
+    logging.info('About to start executing of the script\n')
 
     for folder, name in zip(['train_data/', 'test_data/'], ['train_set.csv', 'test_set.csv']):
         # upload train and test data to trusted folder in the bucket
@@ -160,4 +160,4 @@ if __name__ == "__main__":
                 if each_filename.endswith('.csv'):
                     os.remove(each_filename)
 
-    logging.info('Done executing the transform function')
+    logging.info('Done executing the script')
