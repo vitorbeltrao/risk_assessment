@@ -51,7 +51,7 @@ def download_raw_data(
 
     for file in file_names:
         raw_blob = bucket.blob(destination_raw_blob_path + str(file))
-        raw_blob.download_to_filename(data_directory + file)
+        raw_blob.download_to_filename(data_directory + '/' + file)
     logging.info('Finish the download on raw data: SUCCESS')
 
 
