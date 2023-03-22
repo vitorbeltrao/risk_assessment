@@ -68,11 +68,11 @@ def upload_to_storage(
     blob.upload_from_string(data.to_csv())
 
     return logging.info(
-        'Loading the NEW CSV FILE into the bucket: SUCCESS')
+        'Loading the NEW CSV FILE into the bucket: SUCCESS\n')
 
 
 if __name__ == "__main__":
-    logging.info('About to start executing of the functions')
+    logging.info('About to start executing of the functions\n')
 
     # 1. upload train data to raw/train_data folder in the bucket
     train_data_directory = [TRAIN_DATA_FOLDER_PATH]
@@ -98,4 +98,4 @@ if __name__ == "__main__":
                 DESTINATION_TEST_BLOB_PATH +
                 each_filename)
 
-    logging.info('Done executing the functions')
+    logging.info('\n', 'Done executing the functions')

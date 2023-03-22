@@ -28,7 +28,10 @@ DESTINATION_TRUSTED_BLOB_PATH = sys.argv[4]
 # key code for managing the entire infrastructure
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/risk-assessment-380822-38a40f93abec.json'
 
-def download_raw_data(bucket_name: str, destination_raw_blob_path: str) -> None:
+def download_raw_data(
+        bucket_name: str, 
+        destination_raw_blob_path: str, 
+        component_current_directory: str) -> None:
     '''Function that downloads the files that are in the data lake
 
     :param bucket_name: (str)
@@ -39,6 +42,7 @@ def download_raw_data(bucket_name: str, destination_raw_blob_path: str) -> None:
     '''
     # data download (extract)
     logging.info('Start the download on raw data: SUCCESS')
+    data_directory = component_current_directory
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
 
@@ -47,7 +51,7 @@ def download_raw_data(bucket_name: str, destination_raw_blob_path: str) -> None:
 
     for file in file_names:
         raw_blob = bucket.blob(destination_raw_blob_path + str(file))
-        raw_blob.download_to_filename(file)
+        raw_blob.download_to_filename(component_current_directory)
     logging.info('Finish the download on raw data: SUCCESS')
 
 
@@ -145,7 +149,7 @@ if __name__ == "__main__":
     for folder, name in zip(['train_data/', 'test_data/'], ['train_set.csv', 'test_set.csv']):
         # upload train and test data to trusted folder in the bucket
         component_current_directory = [COMPONENT_CURRENT_DIRECTORY]
-        download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder)
+        download_raw_data(BUCKET_NAME, DESTINATION_RAW_BLOB_PATH + folder, component_current_directory)
         trusted_train_set = transform_raw_data(component_current_directory)
         upload_to_storage(BUCKET_NAME, trusted_train_set, DESTINATION_TRUSTED_BLOB_PATH + folder + name)
         upload_to_wandb(name, trusted_train_set)
@@ -156,4 +160,4 @@ if __name__ == "__main__":
                 if each_filename.endswith('.csv'):
                     os.remove(each_filename)
 
-    logging.info('\nDone executing the transform function')
+    logging.info('\n', 'Done executing the transform function')
