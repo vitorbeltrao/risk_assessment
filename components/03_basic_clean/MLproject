@@ -1,0 +1,7 @@
+name: clean_data
+conda_env: conda.yaml
+
+entry_points:
+  main:
+
+    command: "python basic_clean.py"
