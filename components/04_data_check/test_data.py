@@ -67,7 +67,7 @@ def test_lastmonth_activity_ttest(
     dist1 = data['lastmonth_activity'].values
     dist2 = ref_data['lastmonth_activity'].values
 
-    ts, pvalues = scipy.stats.ttest_ind(dist1, dist2, axis=1)
+    ts, pvalues = scipy.stats.ttest_ind(dist1, dist2)
 
     assert pvalues > 0.05
 
@@ -79,7 +79,7 @@ def test_lastyear_activity_ttest(
     dist1 = data['lastyear_activity'].values
     dist2 = ref_data['lastyear_activity'].values
 
-    ts, pvalues = scipy.stats.ttest_ind(dist1, dist2, axis=1)
+    ts, pvalues = scipy.stats.ttest_ind(dist1, dist2)
 
     assert pvalues > 0.05
 
@@ -91,6 +91,6 @@ def test_number_of_employees_ttest(
     dist1 = data['number_of_employees'].values
     dist2 = ref_data['number_of_employees'].values
 
-    ts, pvalues = scipy.stats.ttest_ind(dist1, dist2, axis=1)
+    ts, pvalues = scipy.stats.ttest_ind(dist1, dist2)
 
     assert pvalues > 0.05
