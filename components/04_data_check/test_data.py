@@ -60,7 +60,7 @@ def test_similar_label_distrib(
     assert scipy.stats.entropy(dist1, dist2, base=2) < 0.20
 
 
-def apply_lastmonth_activity_ttest(
+def test_lastmonth_activity_ttest(
         data: pd.DataFrame, ref_data: pd.DataFrame):
     '''Tests whether the means of two independent samples are significantly different'''
 
@@ -72,7 +72,7 @@ def apply_lastmonth_activity_ttest(
     assert pvalues > 0.05
 
 
-def apply_lastyear_activity_ttest(
+def test_lastyear_activity_ttest(
         data: pd.DataFrame, ref_data: pd.DataFrame):
     '''Tests whether the means of two independent samples are significantly different'''
 
@@ -84,7 +84,7 @@ def apply_lastyear_activity_ttest(
     assert pvalues > 0.05
 
 
-def apply_number_of_employees_ttest(
+def test_number_of_employees_ttest(
         data: pd.DataFrame, ref_data: pd.DataFrame):
     '''Tests whether the means of two independent samples are significantly different'''
 
