@@ -3,8 +3,5 @@ conda_env: conda.yaml
 
 entry_points:
   main:
-    parameters:
-      DATA: {type: str, default: 'vitorabdo/risk_assessment/clean_data:latest'}
-      REF_DATA: {type: str, default: 'vitorabdo/risk_assessment/clean_data:v0'}
 
-    command: "pytest . -vv {DATA} {REF_DATA}"
+    command: "pytest . -vv"

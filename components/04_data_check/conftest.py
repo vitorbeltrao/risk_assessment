@@ -11,13 +11,9 @@ import pytest
 import pandas as pd
 import wandb
 
-# config
-DATA = sys.argv[1]
-REF_DATA = sys.argv[2]
-
 
 @pytest.fixture(scope='session')
-def data(DATA):
+def data():
     '''Fixture to generate data to our tests'''
     run = wandb.init(
         project='risk_assessment',
@@ -26,7 +22,7 @@ def data(DATA):
         resume=True)
 
     # download input artifact
-    data_path = run.use_artifact(DATA).file()
+    data_path = run.use_artifact('vitorabdo/risk_assessment/clean_data:latest', type='dataset').file()
 
     if data_path is None:
         pytest.fail('You must provide the csv file')
@@ -36,7 +32,7 @@ def data(DATA):
 
 
 @pytest.fixture(scope='session')
-def ref_data(REF_DATA):
+def ref_data():
     '''Fixture to generate the reference data for non-deterministic tests'''
     run = wandb.init(
         project='risk_assessment',
@@ -45,7 +41,7 @@ def ref_data(REF_DATA):
         resume=True)
 
     # download input artifact
-    data_path = run.use_artifact(REF_DATA).file()
+    data_path = run.use_artifact('vitorabdo/risk_assessment/clean_data:v0', type='dataset').file()
 
     if data_path is None:
         pytest.fail('You must provide the csv file')
