@@ -17,7 +17,7 @@ _steps = [
     'upload_raw_data',
     'upload_trusted_data',
     'basic_clean',
-    # 'data_check',
+    'data_check',
     # 'train_model',
     # 'test_model'
 ]
@@ -48,6 +48,10 @@ def go(config: DictConfig):
 
     if 'basic_clean' in active_steps:
         project_uri = f"{config['main']['components_repository']}/03_basic_clean"
+        mlflow.run(project_uri)
+
+    if 'data_check' in active_steps:
+        project_uri = f"{config['main']['components_repository']}/04_data_check"
         mlflow.run(project_uri)
 
 
