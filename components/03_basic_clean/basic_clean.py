@@ -7,6 +7,7 @@ Date: March/2023
 '''
 
 # import necessary packages
+import sys
 import logging
 import pandas as pd
 import wandb
@@ -18,17 +19,23 @@ logging.basicConfig(
     format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
+# config
+TRAIN_SET = sys.argv[1]
 
-def clean_data() -> None:
+
+def clean_data(train_set: str) -> None:
     '''Function to clean up our training dataset to feed the machine
     learning model.
+
+    :param train_set: (str)
+    Path to the wandb leading to the training dataset
     '''
     # start a new run at wandb
     run = wandb.init(
         project='risk_assessment',
         entity='vitorabdo',
         job_type='clean_data')
-    artifact = run.use_artifact('vitorabdo/risk_assessment/train_set.csv:latest', type='dataset')
+    artifact = run.use_artifact(train_set, type='dataset')
     filepath = artifact.file()
     logger.info('Downloaded trusted data artifact: SUCCESS')
 
@@ -51,5 +58,5 @@ def clean_data() -> None:
 
 if __name__ == "__main__":
     logging.info('About to start executing the clean_data function')
-    clean_data()
+    clean_data(TRAIN_SET)
     logging.info('Done executing the clean_data function')

@@ -3,5 +3,7 @@ conda_env: conda.yaml
 
 entry_points:
   main:
+    parameters:
+      TRAIN_SET: {type: str, default: 'vitorabdo/risk_assessment/train_set.csv:latest'}
 
-    command: "python basic_clean.py"
+    command: "python basic_clean.py {TRAIN_SET}"
