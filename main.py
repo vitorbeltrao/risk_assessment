@@ -7,6 +7,7 @@ Date: March/2023
 '''
 
 # import necessary packages
+import argparse
 import os
 import json
 import hydra
@@ -64,4 +65,8 @@ def go(config: DictConfig):
 
 
 if __name__ == "__main__":
-    go()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--steps', type=str, default='all',
+                        help='Comma-separated list of steps to execute')
+    args = parser.parse_args()
+    go(steps=args.steps.split(','))
