@@ -19,7 +19,7 @@ _steps = [
     'basic_clean',
     'data_check',
     'train_model',
-    # 'test_model'
+    'test_model'
 ]
 
 @hydra.main(version_base=None, config_path=".", config_name="config")
@@ -56,6 +56,10 @@ def go(config: DictConfig):
 
     if 'train_model' in active_steps:
         project_uri = f"{config['main']['components_repository']}/05_train_model"
+        mlflow.run(project_uri)
+
+    if 'test_model' in active_steps:
+        project_uri = f"{config['main']['components_repository']}/06_test_model"
         mlflow.run(project_uri)
 
 
