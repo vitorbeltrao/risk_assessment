@@ -24,7 +24,7 @@ _steps = [
 ]
 
 @hydra.main(version_base=None, config_path=".", config_name="config")
-def go(config: DictConfig):
+def go(config: DictConfig, steps: str):
     '''Main file that runs the entire pipeline end-to-end using hydra and mlflow
 
     :param config: (.yaml file)
@@ -35,9 +35,7 @@ def go(config: DictConfig):
     os.environ['WANDB_PROJECT'] = config['main']['project_name']
     os.environ['WANDB_RUN_GROUP'] = config['main']['experiment_name']
 
-    # Steps to execute
-    steps_par = config['main']['steps']
-    active_steps = steps_par.split(',') if steps_par != 'all' else _steps
+    active_steps = steps if steps != 'all' else _steps
 
     if 'upload_raw_data' in active_steps:
         project_uri = f"{config['main']['components_repository']}/01_upload_raw_data"
