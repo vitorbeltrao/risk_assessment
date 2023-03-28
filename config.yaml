@@ -2,4 +2,5 @@ main:
   components_repository: 'https://github.com/vitorbeltrao/risk_assessment#components'
   project_name: risk_assessment
   experiment_name: development
-  steps: all
+overrides:
+  - steps
