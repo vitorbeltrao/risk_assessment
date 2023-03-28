@@ -91,7 +91,7 @@ def evaluate_model(
     plt.figure(figsize=(15, 8))
     ax = plt.gca()
     dt_roc_model = RocCurveDisplay.from_estimator(
-        final_model, X_test, y_test, ax=ax, alpha=0.8)
+        sk_pipe, X_test, y_test, ax=ax, alpha=0.8)
     dt_roc_model.plot(ax=ax, alpha=0.8)
     plt.tight_layout()
 
