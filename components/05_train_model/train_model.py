@@ -55,16 +55,16 @@ def get_inference_pipeline(X: pd.DataFrame) -> Pipeline:
 
     # 1.2 apply the respective transformations with columntransformer method
     preprocessor = ColumnTransformer([
-    ('num', StandardScaler(), quantitative_columns)],
-     remainder='drop')
+        ('num', StandardScaler(), quantitative_columns)],
+        remainder='drop')
 
     processed_features = quantitative_columns
 
     # instantiate the final model
     final_model = Pipeline(
-    steps=[
-        ('preprocessor', preprocessor), 
-        ('dt', DecisionTreeClassifier(random_state=42))]
+        steps=[
+            ('preprocessor', preprocessor),
+            ('dt', DecisionTreeClassifier(random_state=42))]
     )
     return final_model, processed_features
 
@@ -88,12 +88,7 @@ def plot_feature_importance(pipe, feat_names) -> plt.figure:
 
     # plot the figure
     fig_feat_imp, sub_feat_imp = plt.subplots(figsize=(10, 10))
-    sub_feat_imp.bar(
-        range(
-            feat_imp.shape[0]),
-        feat_imp,
-        color="r",
-        align="center")
+    sub_feat_imp.bar(range(feat_imp.shape[0]), feat_imp, color="r", align="center")
     _ = sub_feat_imp.set_xticks(range(feat_imp.shape[0]))
     _ = sub_feat_imp.set_xticklabels(np.array(feat_names), rotation=90)
     fig_feat_imp.tight_layout()
@@ -101,10 +96,10 @@ def plot_feature_importance(pipe, feat_names) -> plt.figure:
 
 
 def train_model(
-        train_set: str, 
-        label_column: str, 
-        cv: int, 
-        scoring: str, 
+        train_set: str,
+        label_column: str,
+        cv: int,
+        scoring: str,
         rf_config: dict) -> None:
     '''Function to train the model, tune the hyperparameters
     and save the best final model
@@ -171,11 +166,10 @@ def train_model(
     logger.info('Scoring...')
     cvres = grid_search.cv_results_
 
-    cvres = [(mean_test_score,
-              mean_train_score) for mean_test_score,
-             mean_train_score in sorted(zip(cvres['mean_test_score'],
-                                            cvres['mean_train_score']),
-                                        reverse=True) if (math.isnan(mean_test_score) != True)]
+    cvres = [(mean_test_score, mean_train_score) for mean_test_score,
+              mean_train_score in sorted(zip(cvres['mean_test_score'],
+                                             cvres['mean_train_score']),
+                                         reverse=True) if (math.isnan(mean_test_score) != True)]
 
     logger.info(
         f"The mean val score and mean train score of {scoring} is, respectively: {cvres[0]}")
