@@ -1,0 +1,13 @@
+name: train_data
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      TRAIN_SET: {type: str, default: 'vitorabdo/risk_assessment/clean_data:latest'}
+      LABEL_COLUMN: {type: str, default: 'exited'}
+      CV: {type: int, default: 5}
+      SCORING: {type: str, default: 'accuracy'}
+      RF_CONFIG: {type: dict, default: {'max_depth': 3}}
+    
+    command: "python train_model.py {TRAIN_SET} {LABEL_COLUMN} {CV} {SCORING} {RF_CONFIG}"

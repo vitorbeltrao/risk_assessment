@@ -12,7 +12,6 @@ import logging
 import pandas as pd
 import wandb
 
-# basic logs config
 logging.basicConfig(
     level=logging.INFO,
     filemode='w',
