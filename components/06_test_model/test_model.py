@@ -71,9 +71,13 @@ def evaluate_model(
     sk_pipe = mlflow.sklearn.load_model(model_local_path)
     y_pred = sk_pipe.predict(X_test)
 
-    # scoring the results
+    # scoring the results in a txt file
     logging.info("Scoring...")
-    class_report = classification_report(y_test, y_pred)
+    metrics_filename = open('metrics_output', 'w')
+    sys.stdout = metrics_filename
+    print(classification_report(y_test, y_pred))
+    print("AUC: {:.4f}\n".format(roc_auc_score(y_test, y_pred)))
+    metrics_filename.close()
 
     # plot confusion matrix
     conf_matrix, ax = plt.subplots()
@@ -84,10 +88,7 @@ def evaluate_model(
     ax.set_xlabel("Predicted")
     conf_matrix.tight_layout()
 
-    # print and plot roc_auc
-    auc_score = roc_auc_score(y_test, y_pred)
-    logging.info(f"auc_score: {auc_score}")
-
+    # plot roc_auc
     plt.figure(figsize=(15, 8))
     ax = plt.gca()
     dt_roc_model = RocCurveDisplay.from_estimator(
@@ -95,14 +96,14 @@ def evaluate_model(
     dt_roc_model.plot(ax=ax, alpha=0.8)
     plt.tight_layout()
 
+    # upload the plots in wandb
     run.log(
-        {'classification_report': wandb.Image(class_report)},
         {'confusion_matrix': wandb.Image(conf_matrix)},
         {'roc_curve': wandb.Image(dt_roc_model)})
 
-    # lets see some metrics in our data sliced by sex
-    filename = open('slice_output', 'w')
-    sys.stdout = filename
+    # print metrics with our data sliced in a txt file
+    slice_filename = open('slice_output', 'w')
+    sys.stdout = slice_filename
 
     # sliced data for categorical values
     for columns in X_test.columns:
@@ -113,7 +114,7 @@ def evaluate_model(
             print(f'{option}', score_measure_slice(
                 y_test[row_slice], sk_pipe.predict(X_test[row_slice])))
 
-    filename.close()
+    slice_filename.close()
 
 
 if __name__ == "__main__":
