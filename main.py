@@ -7,7 +7,6 @@ Date: March/2023
 '''
 
 # import necessary packages
-import argparse
 import os
 import json
 import hydra
@@ -24,7 +23,7 @@ _steps = [
 ]
 
 @hydra.main(version_base=None, config_path=".", config_name="config")
-def go(config: DictConfig, steps: str):
+def go(config: DictConfig) -> None:
     '''Main file that runs the entire pipeline end-to-end using hydra and mlflow
 
     :param config: (.yaml file)
@@ -35,7 +34,9 @@ def go(config: DictConfig, steps: str):
     os.environ['WANDB_PROJECT'] = config['main']['project_name']
     os.environ['WANDB_RUN_GROUP'] = config['main']['experiment_name']
 
-    active_steps = steps if steps != 'all' else _steps
+    # Steps to execute
+    steps_par = config['main']['steps']
+    active_steps = steps_par.split(',') if steps_par != 'all' else _steps
 
     if 'upload_raw_data' in active_steps:
         project_uri = f"{config['main']['components_repository']}/01_upload_raw_data"
@@ -63,8 +64,4 @@ def go(config: DictConfig, steps: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--steps', type=str, default='all',
-                        help='Comma-separated list of steps to execute')
-    args = parser.parse_args()
-    go(steps=args.steps.split(','))
+    go()
