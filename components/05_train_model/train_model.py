@@ -34,7 +34,7 @@ logger = logging.getLogger()
 # config
 TRAIN_SET = sys.argv[1]
 LABEL_COLUMN = sys.argv[2]
-CV = sys.argv[3]
+CV = int(sys.argv[3])
 SCORING = sys.argv[4]
 RF_CONFIG = sys.argv[5]
 
