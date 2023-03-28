@@ -25,14 +25,12 @@ logging.basicConfig(
 FINAL_MODEL = sys.argv[1]
 TEST_SET = sys.argv[2]
 LABEL_COLUMN = sys.argv[3]
-SCORE_MEASURE_SLICE = sys.argv[4]
 
 
 def evaluate_model(
         final_model: pickle,
         test_set: str,
-        label_column: str,
-        score_measure_slice: str,) -> None:
+        label_column: str) -> None:
     '''Function to test the model listed for production on the test dataset
 
     :param final_model: (pickle)
@@ -43,9 +41,6 @@ def evaluate_model(
 
     :param label_column: (str)
     Column name of the dataset to be trained that will be the label
-
-    :param score_measure_slice: (str)
-    What performance metric do you want to measure your results on the sliced data
     '''
     # start a new run at wandb
     run = wandb.init(
@@ -107,11 +102,11 @@ def evaluate_model(
 
     # sliced data for categorical values
     for columns in X_test.columns:
-        print(f'\n{score_measure_slice} on {columns} slices:')
+        print(f'\nAccuracy on {columns} slices:')
         slice_options = X_test[columns].unique().tolist()
         for option in slice_options:
             row_slice = X_test[columns] == option
-            print(f'{option}', score_measure_slice(
+            print(f'{option}', accuracy_score(
                 y_test[row_slice], sk_pipe.predict(X_test[row_slice])))
 
     slice_filename.close()
@@ -119,5 +114,5 @@ def evaluate_model(
 
 if __name__ == "__main__":
     logging.info('About to start executing the test_model function')
-    evaluate_model(FINAL_MODEL, TEST_SET, LABEL_COLUMN, SCORE_MEASURE_SLICE)
+    evaluate_model(FINAL_MODEL, TEST_SET, LABEL_COLUMN)
     logging.info('Done executing the test_model function')

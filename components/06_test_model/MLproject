@@ -7,6 +7,5 @@ entry_points:
       FINAL_MODEL: {type: str, default: 'vitorabdo/risk_assessment/final_model_pipe:prod'}
       TEST_SET: {type: str, default: 'vitorabdo/risk_assessment/test_set.csv:latest'}
       LABEL_COLUMN: {type: str, default: 'exited'}
-      SCORE_MEASURE_SLICE: {type: str, default: accuracy_score}
     
-    command: "python test_model.py {FINAL_MODEL} {TEST_SET} {LABEL_COLUMN} {SCORE_MEASURE_SLICE}"
+    command: "python test_model.py {FINAL_MODEL} {TEST_SET} {LABEL_COLUMN}"
