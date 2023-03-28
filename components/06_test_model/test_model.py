@@ -80,13 +80,14 @@ def evaluate_model(
     metrics_filename.close()
 
     # plot confusion matrix
-    conf_matrix, ax = plt.subplots()
-    sns.heatmap(confusion_matrix(y_test, y_pred, normalize='true'),
+    fig , ax = plt.subplots()
+    sns.heatmap(confusion_matrix(y_test, y_pred, normalize='true'), 
                 annot=True, ax=ax)
     ax.set_title("Confusion Matrix")
     ax.set_ylabel("True")
     ax.set_xlabel("Predicted")
-    conf_matrix.tight_layout()
+    plt.savefig('./confusion_matrix.png')
+    plt.show()
 
     # plot roc_auc
     plt.figure(figsize=(15, 8))
@@ -94,13 +95,12 @@ def evaluate_model(
     dt_roc_model = RocCurveDisplay.from_estimator(
         sk_pipe, X_test, y_test, ax=ax, alpha=0.8)
     dt_roc_model.plot(ax=ax, alpha=0.8)
-    plt.tight_layout()
+    plt.savefig('./roc_curve.png')
+    plt.show()
 
     # upload the plots in wandb
-    run.log(
-        {'confusion_matrix': wandb.Image(conf_matrix)},
-        {'roc_curve': wandb.Image(dt_roc_model)})
-
+    
+     
     # print metrics with our data sliced in a txt file
     slice_filename = open('slice_output', 'w')
     sys.stdout = slice_filename
