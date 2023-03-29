@@ -18,7 +18,7 @@ Currently, companies must, in addition to seeking new customers, keep current cu
 
 To carry out the project, it was necessary an architecture that met the low budget, in addition to being functional and scalable. Therefore, we use the architecture below:
 
-![Risk assessment architecture]()
+![Risk assessment architecture](https://github.com/vitorbeltrao/risk_assessment/blob/main/infrastructure/risk_assessment%20-%20architecture.jpg?raw=true)
 ***
 
 ## Files Description <a name="files"></a>
