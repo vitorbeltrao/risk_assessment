@@ -161,5 +161,4 @@ widgetsnbextension==4.0.6
 win-inet-pton==1.1.0
 wincertstore==0.2
 yarl==1.8.1
-ydata-profiling==4.1.1
 zipp==3.11.0
