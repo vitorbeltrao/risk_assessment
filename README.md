@@ -93,7 +93,7 @@ If you want to run a certain steps you can use the examples of command bellow:
 
 This is useful for testing whether steps that have been added or developed can be performed or not.
 
-If you want to run multiple steps (ex: `upload_raw_data` and the `upload_trusted_data` steps), you can similarly do:
+If you want to run multiple steps (i.e.: `upload_raw_data` and the `upload_trusted_data` steps), you can similarly do:
 
 `mlflow run . -P steps=upload_raw_data,upload_trusted_data`
 
