@@ -138,7 +138,6 @@ SQLAlchemy==1.4.39
 sqlparse==0.4.3
 stack-data==0.2.0
 starlette==0.26.1
-statsmodels==0.13.5
 tabulate==0.8.10
 tangled-up-in-unicode==0.2.0
 threadpoolctl==2.2.0
