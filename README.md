@@ -31,6 +31,8 @@ In "risk_assessment" repository we have:
 
 * **notebooks**: Inside this folder are the experimentation and prototyping notebooks for the entire project. Before creating all this current structure, we tested the project hypothesis with notebooks to verify its viability.
 
+* **tests**: Folder containing unit tests to verify that the API created to infer the machine learning model is returning the correct results.
+
 * **main.py file**: Main script in Python that runs all the components. All this managed by *MLflow* and *Hydra*.
 
 * **ml_api.py file**: Script that creates the necessary methods for creating the API with the *FastAPI* library.
