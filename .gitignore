@@ -135,6 +135,6 @@ dmypy.json
 /mlruns
 /outputs
 wandb/
-*.csv
 notebooks/mlruns
 /artifacts
+/notebooks/*.csv

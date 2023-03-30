@@ -44,6 +44,8 @@ To finalize the whole step, we save the best estimator in a pickle file to go to
 
 The data was tested on the remaining 20% ​​of the total dataset, where we never had contact with that dataset. For this, we downloaded the entire inference pipeline stored in the pickle file in the last step and tested it on the test dataset. The evaluation metrics, including sliced data metrics, you can see in the topic below.
 
+Also, regarding model evaluation, we implant a model evaluation historical record into the test data. All of this, in order to verify deviations from the model, that is, if the model starts to perform poorly in the future, we will be aware of this in advance and consequently take the necessary actions such as retraining this model. Atualmente estamos coletando as métricas de acurácia e F1 score. Abaixo você pode ver o arquivo.
+
 ## Metrics
 
 **Train and validation metrics:** 
@@ -52,13 +54,15 @@ The data was tested on the remaining 20% ​​of the total dataset, where we ne
 
 **Test metrics:** 
 
-* [metrics_output.txt](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/metrics_output) file.
+* [actual_metrics_output.txt](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/actual_metrics_output) file.
+
+* [historical_metrics_output.csv]()
 
 * [confusion_matrix.png](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/confusion_matrix.png) file.
 
 * [roc_curve.png](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/roc_curve.png) file.
 
-* [slice_output.txt](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/slice_output) file.
+* [actual_slice_output.txt](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/actual_slice_output) file.
 
 ## Ethical Considerations
 
