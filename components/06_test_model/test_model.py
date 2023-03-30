@@ -144,6 +144,12 @@ def evaluate_model(
         'version': thisversion,
         'metric_accuracy': acc_score, 
         'metric_f1score': f1score}
+    
+    # upload to W&B
+    artifact = wandb.Artifact(
+        name='historical_metrics',
+        type='dataset',
+        description='Historical dataset of model metrics for checking model drift')
 
     if previousscores.empty is True:
         previousscores = previousscores.append(new_row, ignore_index=True)
@@ -156,6 +162,10 @@ def evaluate_model(
     elif acc_score > previousscores['metric_accuracy'].values.max():
         previousscores = previousscores.append(new_row, ignore_index=True)
         previousscores.to_csv('historical_metrics_ouput.csv', index=False)
+
+    artifact.add_file('historical_metrics_ouput.csv')
+    run.log_artifact(artifact)
+    logging.info('Artifact Uploaded: SUCCESS')
 
 
 if __name__ == "__main__":
