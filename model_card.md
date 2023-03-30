@@ -44,7 +44,9 @@ To finalize the whole step, we save the best estimator in a pickle file to go to
 
 The data was tested on the remaining 20% ​​of the total dataset, where we never had contact with that dataset. For this, we downloaded the entire inference pipeline stored in the pickle file in the last step and tested it on the test dataset. The evaluation metrics, including sliced data metrics, you can see in the topic below.
 
-Also, regarding model evaluation, we implant a model evaluation historical record into the test data. All of this, in order to verify **model drift**, that is, if the model starts to perform poorly in the future, we will be aware of this in advance and consequently take the necessary actions such as retraining this model. Atualmente estamos coletando as métricas de acurácia e F1 score. Abaixo você pode ver o arquivo.
+Also, regarding model evaluation, we implant a model evaluation historical record into the test data. All of this, in order to verify **model drift**, that is, if the model starts to perform poorly in the future, we will be aware of this in advance and consequently take the necessary actions such as retraining this model. We are currently collecting the accuracy and F1 score metrics. Below you can see the file.
+
+![Recording model scores](https://github.com/vitorbeltrao/risk_assessment/blob/main/infrastructure/risk_assessment%20-%20architecture.jpg?raw=true)
 
 ## Metrics
 

@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-1. [Project Description](#Description)
+1. [Project Description](#description)
 2. [Files Description](#files)
 3. [Running Files](#running)
 4. [Using the API](#api)
@@ -12,7 +12,7 @@
 7. [Licensing and Authors](#licensingandauthors)
 ***
 
-## Project Description <a name="Description"></a>
+## Project Description <a name="description"></a>
 
 Currently, companies must, in addition to seeking new customers, keep current customers to avoid losses. The idea of this project is precisely to predict whether a customer will stop using the company's services so that it can take the necessary actions to prevent this. The usage is meant for students, academics or research purpose.
 
@@ -113,3 +113,19 @@ We can directly use the existing pipeline to do the training process without the
 ***
 
 ## Using the API <a name="api"></a>
+***
+
+## Model Scoring and Model Drift <a name="scoring"></a>
+
+To check the model score and check the model drift, we are doing it by the following process:
+
+![The model scoring process](https://github.com/vitorbeltrao/risk_assessment/blob/main/infrastructure/risk_assessment%20-%20architecture.jpg?raw=true)
+
+Model scoring should happen at regular intervals. You should read fresh data, make predictions with a deployed model, and measure the model's errors by comparing predicted and actual values.
+
+If your model begins to perform worse than it had before, then you're a victim of model drift. When model drift occurs, you need to retrain and re-deploy your model.
+
+The file containing the detailed evaluation metrics, including the historical records of the test data evaluation, to verify the model drift, are being detailed in the [model card](https://github.com/vitorbeltrao/risk_assessment/blob/main/model_card.md).
+
+
+
