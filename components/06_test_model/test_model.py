@@ -6,6 +6,7 @@ Date: March/2023
 '''
 
 # Import necessary packages
+import os
 import pickle
 import logging
 import sys
@@ -14,7 +15,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import mlflow
 import wandb
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, RocCurveDisplay, roc_auc_score
+from datetime import date
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report, RocCurveDisplay, roc_auc_score
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,25 +64,25 @@ def evaluate_model(
     y_test = test_data[label_column]
 
     # making inference on test set
-    logging.info("Loading model and performing inference on test set")
+    logging.info('Loading model and performing inference on test set')
     sk_pipe = mlflow.sklearn.load_model(model_local_path)
     y_pred = sk_pipe.predict(X_test)
 
     # scoring the results in a txt file
-    logging.info("Scoring...")
-    metrics_filename = open('metrics_output', 'w')
+    logging.info('Scoring...')
+    metrics_filename = open('actual_metrics_output', 'w')
     sys.stdout = metrics_filename
     print(classification_report(y_test, y_pred))
-    print("AUC: {:.4f}\n".format(roc_auc_score(y_test, y_pred)))
+    print('AUC: {:.4f}\n'.format(roc_auc_score(y_test, y_pred)))
     metrics_filename.close()
 
     # plot confusion matrix
-    fig , ax = plt.subplots()
+    fig, ax = plt.subplots()
     sns.heatmap(confusion_matrix(y_test, y_pred, normalize='true'), 
                 annot=True, ax=ax)
-    ax.set_title("Confusion Matrix")
-    ax.set_ylabel("True")
-    ax.set_xlabel("Predicted")
+    ax.set_title('Confusion Matrix')
+    ax.set_ylabel('True')
+    ax.set_xlabel('Predicted')
     plt.savefig('./confusion_matrix.png')
     plt.show()
 
@@ -97,7 +99,7 @@ def evaluate_model(
     
      
     # print metrics with our data sliced in a txt file
-    slice_filename = open('slice_output', 'w')
+    slice_filename = open('actual_slice_output', 'w')
     sys.stdout = slice_filename
 
     # sliced data for categorical values
@@ -110,6 +112,50 @@ def evaluate_model(
                 y_test[row_slice], sk_pipe.predict(X_test[row_slice])))
 
     slice_filename.close()
+
+    # recording model scores
+    logging.info('Recording historical scores...')
+    filenames = os.listdir()
+    # first version of historical scores
+    if 'historical_metrics_ouput.csv' not in filenames: 
+        hist_df = pd.DataFrame(
+            columns=['date', 'version', 'metric_accuracy',
+                    'metric_f1score']
+        )
+        hist_df.to_csv('historical_metrics_ouput.csv', index=False)
+        previousscores = pd.read_csv('historical_metrics_ouput.csv')
+    
+    else: # if the first version was already there
+        previousscores = pd.read_csv('historical_metrics_ouput.csv')
+
+    acc_score = accuracy_score(y_test, y_pred)
+    f1score = f1_score(y_test, y_pred)
+
+    today = date.today() 
+    actual_date = today.strftime("%d/%m/%Y")
+
+    if previousscores['version'].max() != int or previousscores['version'].max() < 1:
+        thisversion = 1
+    else:
+        thisversion = previousscores['version'].max() + 1
+
+    new_row = {
+        'date': actual_date,
+        'version': thisversion,
+        'metric_accuracy': acc_score, 
+        'metric_f1score': f1score}
+
+    if previousscores.empty is True:
+        previousscores = previousscores.append(new_row, ignore_index=True)
+        previousscores.to_csv('historical_metrics_ouput.csv', index=False)
+
+    elif f1score > previousscores['metric_f1score'].values.max():
+        previousscores = previousscores.append(new_row, ignore_index=True)
+        previousscores.to_csv('historical_metrics_ouput.csv', index=False)
+
+    elif acc_score > previousscores['metric_accuracy'].values.max():
+        previousscores = previousscores.append(new_row, ignore_index=True)
+        previousscores.to_csv('historical_metrics_ouput.csv', index=False)
 
 
 if __name__ == "__main__":

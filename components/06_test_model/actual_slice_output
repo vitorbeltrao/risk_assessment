@@ -1,0 +1,28 @@
+
+Accuracy on corporation slices:
+werf 1.0
+sdfv 0.0
+edcv 1.0
+uhgr 1.0
+okjh 0.0
+
+Accuracy on lastmonth_activity slices:
+234 1.0
+14 0.0
+34 1.0
+101 1.0
+0 0.0
+
+Accuracy on lastyear_activity slices:
+3 1.0
+2145 0.0
+333 1.0
+12346 1.0
+675 0.0
+
+Accuracy on number_of_employees slices:
+10 1.0
+99 0.0
+1000 1.0
+2 1.0
+25 0.0
