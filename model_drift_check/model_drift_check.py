@@ -43,21 +43,21 @@ def raw_comparison_test(hist_metrics: str, newf1score: int) -> bool:
     If true: model drift occurred
     '''
     # start a new run at wandb
-    run = wandb.init(
-        project='risk_assessment',
-        entity='vitorabdo',
-        job_type='check_model_drift')
+    # run = wandb.init(
+    #     project='risk_assessment',
+    #     entity='vitorabdo',
+    #     job_type='check_model_drift')
 
-    # download historical metrics dataset
-    previousscores = run.use_artifact(hist_metrics, type='dataset').file()
-    logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
+    # # download historical metrics dataset
+    # previousscores = run.use_artifact(hist_metrics, type='dataset').file()
+    # logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
 
     # Read historical metrics dataset
-    previousscores = pd.read_csv(previousscores)
+    previousscores = pd.read_csv(hist_metrics)
 
     # raw comparison
     raw_test = newf1score < previousscores['metric_f1score'].values.min()
-    return print(raw_test)
+    return raw_test
 
 
 def parametric_significance_test(hist_metrics: str, newf1score: int) -> bool:
@@ -76,22 +76,22 @@ def parametric_significance_test(hist_metrics: str, newf1score: int) -> bool:
     Returns bool showing whether or not the model drift occurred. 
     If true: model drift occurred
     '''
-    # start a new run at wandb
-    run = wandb.init(
-        project='risk_assessment',
-        entity='vitorabdo',
-        job_type='check_model_drift')
+    # # start a new run at wandb
+    # run = wandb.init(
+    #     project='risk_assessment',
+    #     entity='vitorabdo',
+    #     job_type='check_model_drift')
 
-    # download historical metrics dataset
-    previousscores = run.use_artifact(hist_metrics, type='dataset').file()
-    logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
+    # # download historical metrics dataset
+    # previousscores = run.use_artifact(hist_metrics, type='dataset').file()
+    # logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
 
     # Read historical metrics dataset
-    previousscores = pd.read_csv(previousscores)
+    previousscores = pd.read_csv(hist_metrics)
 
     # parametric comparison
     parametric_test = newf1score < np.mean(previousscores['metric_f1score']) - (2 * np.std(previousscores['metric_f1score']))
-    return print(parametric_test)
+    return parametric_test
 
 
 def non_parametric_outlier_test(hist_metrics: str, newf1score: int) -> bool:
@@ -116,30 +116,57 @@ def non_parametric_outlier_test(hist_metrics: str, newf1score: int) -> bool:
     Returns bool showing whether or not the model drift occurred. 
     If true: model drift occurred
     '''
-    # start a new run at wandb
-    run = wandb.init(
-        project='risk_assessment',
-        entity='vitorabdo',
-        job_type='check_model_drift')
+    # # start a new run at wandb
+    # run = wandb.init(
+    #     project='risk_assessment',
+    #     entity='vitorabdo',
+    #     job_type='check_model_drift')
 
-    # download historical metrics dataset
-    previousscores = run.use_artifact(hist_metrics, type='dataset').file()
-    logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
+    # # download historical metrics dataset
+    # previousscores = run.use_artifact(hist_metrics, type='dataset').file()
+    # logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
 
     # Read historical metrics dataset
-    previousscores = pd.read_csv(previousscores)
+    previousscores = pd.read_csv(hist_metrics)
 
     # non parametric comparison
     iqr = np.quantile(previousscores['metric_f1score'], 0.75) - np.quantile(previousscores['metric_f1score'], 0.25)
     non_parametric_test = newf1score < np.quantile(previousscores['metric_f1score'], 0.25) - iqr * 1.5
-    return print(non_parametric_test)
+    return non_parametric_test
 
 
-def final_model_drift_verify() -> bool:
+def final_model_drift_verify(hist_metrics: str, newf1score: int) -> bool:
     '''Test that checks the three methods:
     raw comparison test, parametric_significance_test
     and non parametric outlier test. We will have a model 
     drift if at least 2 tests show that there was a model 
     drift. Remembering, the True result is a sign that the 
     test accused the model drift
+
+    :param hist_metrics: (str)
+    Path to the wandb leading to the historical metrics csv
+
+    :param newf1score: (int)
+    F1 score value to be compared with historical metrics set
+
+    :return: (bool)
+    Returns bool showing whether or not the model drift occurred. 
+    If true: model drift occurred
     '''
+    # final comparison
+    first_test = raw_comparison_test(hist_metrics, newf1score)
+    second_test = parametric_significance_test(hist_metrics, newf1score)
+    third_test = non_parametric_outlier_test(hist_metrics, newf1score)
+
+    if first_test is True and second_test is True:
+        print('True')
+        return True
+    elif first_test is True and third_test is True:
+        print('True')
+        return True
+    elif second_test is True and third_test is True:
+        print('True')
+        return True
+    else:
+        print('False')
+        return False
