@@ -131,7 +131,7 @@ The file containing the detailed evaluation metrics, including the historical re
 
 In the model_drift_check folder, we create the scripts that check the model drift through three functions: *Raw Comparison Test*, *Parametric Significance Test* and *Non-Parametric Outlier Test*. For more information on what each of these tests does, visit the respective folder with the scripts and see the documentation for the functions.
 
-Finally, after testing these three functions that verify the model drift, we choose by voting whether the model suffered model drift or not, that is, if two of these functions show model drift, then we have model drift and vice versa. We do this final check in the *tests* folder, with the help of *pytest*.
+Finally, after testing these three functions that verify the model drift, we choose by voting whether the model suffered model drift or not, that is, if two of these functions show model drift, then we have model drift and vice versa. We do this final check in the *tests* folder, with the help of *pytest*. If we don't have model drift, then we keep the current model in production; if we have model drift then we must retrain and re-deploy the model.
 ***
 
 ## Diagnosing and Fixing Operational Problems <a name="diagnosing"></a>
