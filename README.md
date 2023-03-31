@@ -31,7 +31,9 @@ In "risk_assessment" repository we have:
 
 * **notebooks**: Inside this folder are the experimentation and prototyping notebooks for the entire project. Before creating all this current structure, we tested the project hypothesis with notebooks to verify its viability.
 
-* **tests**: Folder containing unit tests to verify that the API created to infer the machine learning model is returning the correct results.
+* **tests**: Folder containing unit tests to verify that the API created to infer the machine learning model is returning the correct results. In addition, we also tested the model drift.
+
+* **model_drift_check**: Folder that contains the script that performs model drift checks in conjunction with pytest, whose tests are in the *tests* folder.
 
 * **main.py file**: Main script in Python that runs all the components. All this managed by *MLflow* and *Hydra*.
 
@@ -126,6 +128,15 @@ Model scoring should happen at regular intervals. You should read fresh data, ma
 If your model begins to perform worse than it had before, then you're a victim of model drift. When model drift occurs, you need to retrain and re-deploy your model.
 
 The file containing the detailed evaluation metrics, including the historical records of the test data evaluation, to verify the model drift, are being detailed in the [model card](https://github.com/vitorbeltrao/risk_assessment/blob/main/model_card.md).
+
+In the model_drift_check folder, we create the scripts that check the model drift through three functions: *Raw Comparison Test*, *Parametric Significance Test* and *Non-Parametric Outlier Test*. For more information on what each of these tests does, visit the respective folder with the scripts and see the documentation for the functions.
+
+Finally, after testing these three functions that verify the model drift, we choose by voting whether the model suffered model drift or not, that is, if two of these functions show model drift, then we have model drift and vice versa. We do this final check in the *tests* folder, with the help of *pytest*.
+***
+
+## Diagnosing and Fixing Operational Problems <a name="diagnosing"></a>
+
+***
 
 
 

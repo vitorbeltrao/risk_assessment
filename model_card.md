@@ -58,7 +58,7 @@ Also, regarding model evaluation, we implant a model evaluation historical recor
 
 * [actual_metrics_output.txt](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/actual_metrics_output) file.
 
-* [historical_metrics_output.csv](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/historical_metrics_ouput.csv) file.
+* historical_metrics_output.csv: it is an artifact that we uploaded to the wandb to help us with model drift verification.
 
 * [confusion_matrix.png](https://github.com/vitorbeltrao/risk_assessment/blob/main/components/06_test_model/confusion_matrix.png) file.
 
