@@ -29,7 +29,6 @@ logging.basicConfig(
     level=logging.INFO,
     filemode='w',
     format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger()
 
 # config
 TRAIN_SET = sys.argv[1]
@@ -127,7 +126,7 @@ def train_model(
         job_type='train_data')
     artifact = run.use_artifact(train_set, type='dataset')
     filepath = artifact.file()
-    logger.info('Downloaded cleaned data artifact: SUCCESS')
+    logging.info('Downloaded cleaned data artifact: SUCCESS')
 
     # Get the decision tree configuration and update W&B
     try:
@@ -141,14 +140,14 @@ def train_model(
     df_clean = pd.read_csv(filepath)
     X = df_clean.drop([label_column], axis=1)
     y = df_clean[label_column]
-    logger.info(f"Numbers of unique incomes: {y.value_counts()}")
+    logging.info(f"Numbers of unique incomes: {y.value_counts()}")
 
     # training the model
-    logger.info('Preparing sklearn pipeline')
+    logging.info('Preparing sklearn pipeline')
     sk_pipe, processed_features = get_inference_pipeline(X)
 
     # hyperparameter interval to be trained and tested
-    logger.info('Fitting...')
+    logging.info('Fitting...')
     param_grid = rf_config
 
     grid_search = GridSearchCV(
@@ -163,7 +162,7 @@ def train_model(
     final_model = grid_search.best_estimator_
 
     # scoring
-    logger.info('Scoring...')
+    logging.info('Scoring...')
     cvres = grid_search.cv_results_
 
     cvres = [(mean_test_score, mean_train_score) for mean_test_score,
@@ -171,11 +170,11 @@ def train_model(
                                              cvres['mean_train_score']),
                                          reverse=True) if (math.isnan(mean_test_score) != True)]
 
-    logger.info(
+    logging.info(
         f"The mean val score and mean train score of {scoring} is, respectively: {cvres[0]}")
 
     # exporting the model: save model package in the MLFlow sklearn format
-    logger.info('Exporting model')
+    logging.info('Exporting model')
 
     with tempfile.TemporaryDirectory() as temp_dir:
         export_path = os.path.join(temp_dir, 'model_export')
@@ -194,7 +193,7 @@ def train_model(
     artifact.add_dir(export_path)
     run.log_artifact(artifact)
     artifact.wait()
-    logger.info('Artifact Uploaded: SUCCESS')
+    logging.info('Artifact Uploaded: SUCCESS')
 
     # Plot feature importance
     fig_feat_imp = plot_feature_importance(final_model, processed_features)
