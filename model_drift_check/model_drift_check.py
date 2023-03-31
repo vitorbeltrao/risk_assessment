@@ -6,23 +6,14 @@ Date: March/2023
 '''
 
 # Import necessary packages
-import sys
 import logging
 import pandas as pd
 import numpy as np
-import wandb
 
 logging.basicConfig(
     level=logging.INFO,
     filemode='w',
     format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s')
-
-# # config
-# HIST_METRICS = sys.argv[1]
-
-# config
-HIST_METRICS = '01c7dc5d8ba7d34e17a1ce2921c3e391.csv'
-newf1 = 0.38
 
 
 def raw_comparison_test(hist_metrics: str, newf1score: int) -> bool:
@@ -42,16 +33,6 @@ def raw_comparison_test(hist_metrics: str, newf1score: int) -> bool:
     Returns bool showing whether or not the model drift occurred. 
     If true: model drift occurred
     '''
-    # start a new run at wandb
-    # run = wandb.init(
-    #     project='risk_assessment',
-    #     entity='vitorabdo',
-    #     job_type='check_model_drift')
-
-    # # download historical metrics dataset
-    # previousscores = run.use_artifact(hist_metrics, type='dataset').file()
-    # logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
-
     # Read historical metrics dataset
     previousscores = pd.read_csv(hist_metrics)
 
@@ -76,16 +57,6 @@ def parametric_significance_test(hist_metrics: str, newf1score: int) -> bool:
     Returns bool showing whether or not the model drift occurred. 
     If true: model drift occurred
     '''
-    # # start a new run at wandb
-    # run = wandb.init(
-    #     project='risk_assessment',
-    #     entity='vitorabdo',
-    #     job_type='check_model_drift')
-
-    # # download historical metrics dataset
-    # previousscores = run.use_artifact(hist_metrics, type='dataset').file()
-    # logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
-
     # Read historical metrics dataset
     previousscores = pd.read_csv(hist_metrics)
 
@@ -116,16 +87,6 @@ def non_parametric_outlier_test(hist_metrics: str, newf1score: int) -> bool:
     Returns bool showing whether or not the model drift occurred. 
     If true: model drift occurred
     '''
-    # # start a new run at wandb
-    # run = wandb.init(
-    #     project='risk_assessment',
-    #     entity='vitorabdo',
-    #     job_type='check_model_drift')
-
-    # # download historical metrics dataset
-    # previousscores = run.use_artifact(hist_metrics, type='dataset').file()
-    # logging.info('Downloaded historical metrics dataset artifact: SUCCESS')
-
     # Read historical metrics dataset
     previousscores = pd.read_csv(hist_metrics)
 
