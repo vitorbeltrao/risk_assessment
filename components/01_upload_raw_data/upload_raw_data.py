@@ -101,5 +101,5 @@ if __name__ == "__main__":
                 each_filename)
             
     timing = timeit.default_timer() - starttime
-    logging.info('The execution time of this step was:', timing)
+    logging.info(f'The execution time of this step was:{timing}')
     logging.info('Done executing the functions')

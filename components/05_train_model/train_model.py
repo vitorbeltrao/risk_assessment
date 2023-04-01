@@ -217,5 +217,5 @@ if __name__ == "__main__":
     train_model(TRAIN_SET, LABEL_COLUMN, CV, SCORING, RF_CONFIG)
     
     timing = timeit.default_timer() - starttime
-    logging.info('The execution time of this step was:', timing)
+    logging.info(f'The execution time of this step was:{timing}')
     logging.info('Done executing the train_model function')
