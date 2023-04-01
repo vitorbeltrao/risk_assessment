@@ -7,6 +7,7 @@ Date: March/2023
 '''
 
 # import necessary packages
+import timeit
 import os
 import sys
 import logging
@@ -73,6 +74,7 @@ def upload_to_storage(
 
 if __name__ == "__main__":
     logging.info('About to start executing of the functions\n')
+    starttime = timeit.default_timer()
 
     # 1. upload train data to raw/train_data folder in the bucket
     train_data_directory = [TRAIN_DATA_FOLDER_PATH]
@@ -97,5 +99,7 @@ if __name__ == "__main__":
                 current_test_df,
                 DESTINATION_TEST_BLOB_PATH +
                 each_filename)
-
+            
+    timing = timeit.default_timer() - starttime
+    logging.info('The execution time of this step was:', timing)
     logging.info('Done executing the functions')

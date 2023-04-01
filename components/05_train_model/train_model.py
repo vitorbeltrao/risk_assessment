@@ -7,6 +7,7 @@ Date: March/2023
 '''
 
 # import necessary packages
+import timeit
 import logging
 import os
 import tempfile
@@ -211,5 +212,10 @@ def train_model(
 
 if __name__ == "__main__":
     logging.info('About to start executing the train_model function')
+    starttime = timeit.default_timer() 
+
     train_model(TRAIN_SET, LABEL_COLUMN, CV, SCORING, RF_CONFIG)
+    
+    timing = timeit.default_timer() - starttime
+    logging.info('The execution time of this step was:', timing)
     logging.info('Done executing the train_model function')

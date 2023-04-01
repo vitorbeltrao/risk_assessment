@@ -8,6 +8,7 @@ Date: March/2023
 '''
 
 # import necessary packages
+import timeit
 import os
 import sys
 import logging
@@ -147,6 +148,7 @@ def upload_to_wandb(name_set: str, data: pd.DataFrame) -> None:
 
 if __name__ == "__main__":
     logging.info('About to start executing of the script\n')
+    starttime = timeit.default_timer()
 
     for folder, name in zip(['train_data/', 'test_data/'], ['train_set.csv', 'test_set.csv']):
         # upload train and test data to trusted folder in the bucket
@@ -162,4 +164,6 @@ if __name__ == "__main__":
                 if each_filename.endswith('.csv'):
                     os.remove(directory + '/' + each_filename)
 
+    timing = timeit.default_timer() - starttime
+    logging.info('The execution time of this step was:', timing)
     logging.info('Done executing the script')
