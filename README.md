@@ -136,7 +136,35 @@ Finally, after testing these three functions that verify the model drift, we cho
 
 ## Diagnosing and Fixing Operational Problems <a name="diagnosing"></a>
 
+In addition to the model drift, detailed in the previous step, we are also monitoring our system at the level of: *Timing ML Processes* and *Integrity and Stability Issues*.
+
+### Timing ML Processes
+
+We are timing the execution of some of the most important components for the system, which are: [upload raw data](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/01_upload_raw_data), [upload trusted data](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/02_upload_trusted_data) and [train model](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/05_train_model). With this, we can monitor the latency of the steps and take the necessary actions, in case this time makes the system unfeasible
+
+### Integrity and Stability Issues
+
+**Data integrity**, refers to the case when data is missing or invalid. We are tracking this step in the component [data_check](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/04_data_check). If we have a data integrity issue, the respective test will fail, and we will be able to take the necessary actions to fix it.
+
+**Data stability**, refers to the case when the data contains values ​​different from what we expect. We are tracking this step in the component [data_check](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/04_data_check). If we have a data integrity issue, the respective test will fail, and we will be able to take the necessary actions to fix it.
 ***
 
+## Model Reporting and Monitoring <a name="reporting"></a>
 
+***
 
+## Licensing and Author <a name="licensingandauthors"></a>
+
+Vítor Beltrão - Data Scientist
+
+Reach me at: 
+
+- vitorbeltraoo@hotmail.com
+
+- [linkedin](https://www.linkedin.com/in/v%C3%ADtor-beltr%C3%A3o-56a912178/)
+
+- [github](https://github.com/vitorbeltrao)
+
+- [medium](https://pandascouple.medium.com)
+
+Licensing: [MIT LICENSE](https://github.com/vitorbeltrao/risk_assessment/blob/main/LICENSE)
