@@ -47,6 +47,14 @@ def test_entries_values(data):
     assert set(known_label_entries) == set(label_column)
 
 
+def test_data_integrity(data):
+    '''Test data integrity: when data is missing or invalid, 
+    we say that there's a data integrity issue
+    '''
+    check_null_values = list(data.isna().sum())
+    assert all(check_null_values) == 0
+
+
 # NON DETERMINISTIC TESTS
 
 def test_similar_label_distrib(
