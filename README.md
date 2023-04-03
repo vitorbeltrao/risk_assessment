@@ -8,7 +8,6 @@
 4. [Using the API](#api)
 5. [Model Scoring and Model Drift](#scoring)
 6. [Diagnosing and Fixing Operational Problems](#diagnosing)
-6. [Model Reporting and Monitoring](#reporting)
 7. [Licensing and Authors](#licensingandauthors)
 ***
 
@@ -115,6 +114,7 @@ We can directly use the existing pipeline to do the training process without the
 ***
 
 ## Using the API <a name="api"></a>
+
 ***
 
 ## Model Scoring and Model Drift <a name="scoring"></a>
@@ -147,10 +147,6 @@ We are timing the execution of some of the most important components for the sys
 **Data integrity**, refers to the case when data is missing or invalid. We are tracking this step in the component [data_check](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/04_data_check). If we have a data integrity issue, the respective test will fail, and we will be able to take the necessary actions to fix it.
 
 **Data stability**, refers to the case when the data contains values ​​different from what we expect. We are tracking this step in the component [data_check](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/04_data_check). If we have a data integrity issue, the respective test will fail, and we will be able to take the necessary actions to fix it.
-***
-
-## Model Reporting and Monitoring <a name="reporting"></a>
-
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>

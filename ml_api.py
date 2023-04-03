@@ -13,6 +13,9 @@ import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
 import wandb
+import subprocess
+import re
+import diagnostics
 
 logging.basicConfig(
     level=logging.INFO,
@@ -81,6 +84,53 @@ def income_pred(input_parameters: ModelInput):
         return 'The person has no risk of leaving the company'
 
     return 'The person is at risk of leaving the company'
+
+
+@app.get("/scoring")
+def score():
+    """
+    Scoring endpoint that runs the script scoring.py and
+    gets the score of the deployed model
+    Returns:
+        str: model f1 score
+    """
+    output = subprocess.run(['python', 'components/06_test_model/test_model.py'],
+                            capture_output=True).stdout
+    output = re.findall(r'f1 score = \d*\.?\d+', output.decode())[0]
+    return output
+
+
+@app.get("/summarystats")
+def stats():
+    """
+    Summary statistics endpoint that calls dataframe summary
+    function from diagnostics.py
+    Returns:
+        json: summary statistics
+    """
+    return diagnostics.dataframe_summary()
+
+
+@app.get("/diagnostics")
+def diag():
+    """
+    Diagnostics endpoint thats calls missing_percentage, execution_time,
+    and outdated_package_list from diagnostics.py
+    Returns:
+        dict: missing percentage, execution time and outdated packages
+    """
+    missing = diagnostics.missing_percentage()
+    time = diagnostics.execution_time()
+    outdated = diagnostics.outdated_packages_list()
+
+    ret = {
+        'missing_percentage': missing,
+        'execution_time': time,
+        'outdated_packages': outdated
+    }
+
+    return ret
+
 
 
 if __name__ == '__main__':
