@@ -1,0 +1,1 @@
+10 * * * * python ml_api.py && python main.py
