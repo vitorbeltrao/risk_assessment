@@ -1,72 +1,96 @@
-"""
+'''
 Model and Data Diagnostics: diagnostic tests related to the model as well as the data.
 
 Author: Vitor Abdo
 Date: April/2023
-"""
+'''
 
 import subprocess
 
 import pandas as pd
 import timeit
 import os
-import json
+import sys
 import pickle
 import logging
 import wandb
-import mlflow
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    filemode='w',
+    format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s')
+
+# # config
+# PROD_MODEL_PATH = sys.argv[1]
+# TEST_SET = sys.argv[2]
+# LABEL_COLUMN = sys.argv[3]
+# CLEAN_DATA = sys.argv[4]
+
+# config
+PROD_MODEL_PATH = 'prod_deployment_path'
+TEST_SET = 'vitorabdo/risk_assessment/test_set.csv:latest'
+LABEL_COLUMN = 'exited'
+CLEAN_DATA = 'vitorabdo/risk_assessment/clean_data:latest'
+
+run = wandb.init(
+    project='risk_assessment',
+    entity='vitorabdo',
+    job_type='diagnostics')
 
 
-def model_predictions():
-    """
-    Get model predictions: read the deployed model and a test dataset, calculate predictions
-    :param data: data we use for prediction represented as a panda Dataframe
-    :return:
-    list containing all predictions
-    """
-    # start a new run at wandb
-    run = wandb.init(
-        project='risk_assessment',
-        entity='vitorabdo',
-        job_type='test_model')
+def model_predictions(prod_model_path: str,
+                      test_set: str,
+                      label_column: str) -> list:
+    '''Get model predictions: read the deployed model and a test dataset, calculate predictions
+    
+    :param final_model: (pickle)
+    Path to "prod_deployment_path" folder that have pkl file with all saved model pipeline
 
-    # download mlflow model
-    model_local_path = run.use_artifact('vitorabdo/risk_assessment/final_model_pipe:prod', type='pickle').download()
-    logger.info('Downloaded prod mlflow model: SUCCESS')
+    :param test_set: (str)
+    Path to the wandb leading to the test dataset
+
+    :param label_column: (str)
+    Column name of the dataset to be trained that will be the label
+
+    :return: (list)
+    Returns a list of test data predictions
+    '''
+    # get mlflow model pkl
+    model_path = os.path.join(prod_model_path, 'model.pkl')
+    sk_pipe = pickle.load(open(model_path, 'rb'))
+    logging.info('Get prod mlflow model: SUCCESS')
 
     # download test dataset
-    test_data = run.use_artifact('vitorabdo/risk_assessment/test_set.csv:latest', type='dataset').file()
-    logger.info('Downloaded test dataset artifact: SUCCESS')
+    test_data = run.use_artifact(test_set, type='dataset').file()
+    logging.info('Downloaded test dataset artifact: SUCCESS')
 
     # Read test dataset
     test_data = pd.read_csv(test_data)
-    X_test = test_data.drop(['exited'], axis=1)
-    y_test = test_data['exited']
+    X_test = test_data.drop([label_column], axis=1)
 
     # making inference on test set
-    logger.info('Loading model and performing inference on test set')
-    sk_pipe = mlflow.sklearn.load_model(model_local_path)
     y_pred = sk_pipe.predict(X_test)
+    logging.info('Loading model and performing inference on test set: SUCCESS\n')
     return list(y_pred)
 
 
-def dataframe_summary():
-    """
-    Get summary statistics
-    :return:
-    dictionary of statistics (mean, median, std deviation) related to each numerical column
-    """
-    logger.info('calculate statistics on the data')
-    # start a new run at wandb
-    run = wandb.init(
-        project='risk_assessment',
-        entity='vitorabdo',
-        job_type='train_data')
-    artifact = run.use_artifact('vitorabdo/risk_assessment/clean_data:latest', type='dataset')
+def summary_statistics(clean_data: str) -> dict:
+    '''Get summary statistics: mean, median and standard deviation
+
+    :param clean_data: (str)
+    Clean dataset used in model training
+
+    :return: (dict)
+    Dictionary of statistics (mean, median, std deviation) related to each numerical column
+    '''
+    logging.info('Calculate statistics on the data')
+
+    # download clean_data
+    artifact = run.use_artifact(clean_data, type='dataset')
     filepath = artifact.file()
     data = pd.read_csv(filepath)
+
+    # get summary statistics
     X = data.iloc[:, 1:-1]
     means = X.mean()
     medians = X.median()
@@ -76,61 +100,75 @@ def dataframe_summary():
     for col in X.columns:
         col_stats[col] = {'mean': means[col], 'median': medians[col], 'std_dev': std_var[col]}
 
+    logging.info('Calculated stats: SUCCESS\n')
     return col_stats
 
 
-def missing_data():
-    """
-    Check for missing data by calculating what percent of each column consists of NA values.
-    :return:
-    Dictionary with keys corresponding to the columns of the dataset.
-    Each element of the dictionary gives the percent of NA values in a particular column of the data.
-    """
-    logger.info('check for missing data')
-    run = wandb.init(
-        project='risk_assessment',
-        entity='vitorabdo',
-        job_type='train_data')
-    artifact = run.use_artifact('vitorabdo/risk_assessment/clean_data:latest', type='dataset')
+def check_missing_data(clean_data: str) -> dict:
+    '''Check for missing data by calculating what percent of each column consists of NA values
+
+    :param clean_data: (str)
+    Clean dataset used in model training
+
+    :return: (dict)
+    Dictionary with keys corresponding to the columns of the dataset
+    Each element of the dictionary gives the percent of NA values in a particular column of the data
+    '''
+    logging.info('Checking for missing data')
+
+    # download clean_data
+    artifact = run.use_artifact(clean_data, type='dataset')
     filepath = artifact.file()
     data = pd.read_csv(filepath)
+
+    # check for missing data
     missing = data.isna().sum()
     n_data = data.shape[0]
     missing = missing / n_data
+    logging.info('Check missing data: SUCCESS\n')
     return missing.to_dict()
 
 
-def execution_time():
-    """
-    Get timings: calculate timing of training.py and ingestion.py.
-    :return:
-    list of 2 timing values in seconds
-    """
-    logger.info('calculate timing for ingestion and training')
-    # timing ingestion
-    starttime = timeit.default_timer()
-    os.system('python3 components/02_upload_trusted_data/upload_trusted_data.py')
-    ingestion_timing = timeit.default_timer() - starttime
+def execution_time() -> list:
+    '''Calculates the execution time of the scripts for monitoring the following files:
+    upload_raw_data.py, upload_trusted_data.py, train_model.py
 
-    # timing training
+    :return: (list)
+    list of 3 timing values in seconds
+    '''
+    logging.info('Calculate timing for upload data and training model')
+
+    # timing upload_raw_data
     starttime = timeit.default_timer()
-    os.system('python3 risk_assessment/components/05_train_model/train_model.py')
+    os.system('mlflow run . -P steps=upload_raw_data')
+    ingestion_raw_data_timing = timeit.default_timer() - starttime
+
+    # timing upload_trusted_data
+    starttime = timeit.default_timer()
+    os.system('mlflow run . -P steps=upload_trusted_data')
+    ingestion_trusted_data_timing = timeit.default_timer() - starttime
+
+    # timing train_model
+    starttime = timeit.default_timer()
+    os.system('mlflow run . -P steps=train_model')
     training_timing = timeit.default_timer() - starttime
 
-    return [ingestion_timing, training_timing]
+    logging.info('Calculated timing for scripts: SUCCESS\n')
+    return [ingestion_raw_data_timing, ingestion_trusted_data_timing, training_timing]
 
 
-def outdated_packages_list():
-    """
-    Check dependencies: checks the current and latest versions of all the modules that the scripts use
-    (the current version is recorded in requirements.txt).
-    :return:
+def outdated_packages_list() -> dict:
+    '''Check dependencies: checks the current and latest versions of all the modules that the scripts use
+    (the current version is recorded in requirements.txt)
+
+    :return: (dict)
     Output a list of dictionaries, one for each package used: the first key will show the name of a Python
     module that is used; the second key will show the currently installed version of that Python module, and
     the third key will show the most recent available version of that Python module:
     [{'module': 'click', 'current': '7.1.2', 'latest': '8.1.3'}, ...]
-    """
-    logger.info('Check dependencies versions')
+    '''
+    logging.info('Check dependencies versions')
+
     # current version of dependencies
     with open('requirements.txt', 'r') as req_file:
         requirements = req_file.read().split('\n')
@@ -147,13 +185,16 @@ def outdated_packages_list():
 
     # if we're already using the latest version of a module, we fill latest with this version:
     df['latest'].fillna(df['current'], inplace=True)
+    logging.info('Check dependencies versions: SUCCESS\n')
+
     return df.to_dict('records')
 
 
 if __name__ == '__main__':
-    y_pred = model_predictions()
-    stats = dataframe_summary()
-    missing = missing_data()
+    logging.info('About to start executing the diagnostics function\n')
+    y_pred = model_predictions(PROD_MODEL_PATH, TEST_SET, LABEL_COLUMN)
+    stats = summary_statistics(CLEAN_DATA)
+    missing = check_missing_data(CLEAN_DATA)
     time_check = execution_time()
     outdated = outdated_packages_list()
-    pass
+    logging.info('Done executing the diagnostics function')
