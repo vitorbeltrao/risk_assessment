@@ -136,3 +136,4 @@ wandb/
 notebooks/mlruns
 /artifacts
 /notebooks/*.csv
+components/07_deployment/artifacts
