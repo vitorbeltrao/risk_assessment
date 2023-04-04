@@ -7,11 +7,16 @@ Date: March/2023
 '''
 
 # import necessary packages
+import argparse
 import os
 import json
 import hydra
 import mlflow
 from omegaconf import DictConfig
+
+# define argument parser
+parser = argparse.ArgumentParser()
+parser.add_argument('--steps', type=str, default='all', help='Steps to execute')
 
 _steps = [
     'upload_raw_data',
@@ -19,8 +24,7 @@ _steps = [
     'basic_clean',
     'data_check',
     'train_model',
-    'test_model'
-]
+    'test_model']
 
 @hydra.main(version_base=None, config_path=".", config_name="config")
 def go(config: DictConfig) -> None:
@@ -63,4 +67,8 @@ def go(config: DictConfig) -> None:
 
 
 if __name__ == "__main__":
-    go()
+    # parse command line arguments
+    args = parser.parse_args()
+
+    # pass command line arguments to the main function
+    go({'main': {'steps': args.steps}})
