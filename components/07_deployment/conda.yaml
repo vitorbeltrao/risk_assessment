@@ -1,0 +1,8 @@
+name: deployment
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip=23.0.1
+  - pip:
+    - wandb==0.14.0
