@@ -78,6 +78,8 @@ if __name__ == "__main__":
 
     # 1. upload train data to raw/train_data folder in the bucket
     train_data_directory = [TRAIN_DATA_FOLDER_PATH]
+    ingested_files = open('ingested_files', 'w')
+    sys.stdout = ingested_files
     for directory in train_data_directory:
         filenames = os.listdir(directory)
         for each_filename in filenames:
@@ -87,6 +89,10 @@ if __name__ == "__main__":
                 current_train_df,
                 DESTINATION_TRAIN_BLOB_PATH +
                 each_filename)
+            
+            # printing ingested files to a txt file
+            print(each_filename)
+    ingested_files.close()
 
     # 2. upload test data to raw/test_data folder in the bucket
     test_data_directory = [TEST_DATA_FOLDER_PATH]
