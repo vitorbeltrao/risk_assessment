@@ -8,14 +8,14 @@ Date: March/2023
 # Import necessary packages
 import json
 import logging
-import mlflow
+import pickle
+import os
 import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
-import wandb
-import subprocess
-import re
-import diagnostics
+from fastapi.encoders import jsonable_encoder
+from sklearn.metrics import f1_score
+from diagnostics import summary_statistics, check_missing_data, execution_time, outdated_packages_list
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,20 +44,10 @@ class ModelInput(BaseModel):
         }
 
 
-# loading the saved model
-# start a new run at wandb
-run = wandb.init(
-    project='risk_assessment',
-    entity='vitorabdo',
-    job_type='get_mlflow_model')
-
-# download mlflow model
-model_local_path = run.use_artifact(
-    'vitorabdo/risk_assessment/final_model_pipe:prod',
-    type='pickle').download()
-sk_pipe = mlflow.sklearn.load_model(model_local_path)
-wandb.finish()
-logging.info('Downloaded prod mlflow model: SUCCESS')
+# get mlflow model pkl from prod_deployment_path folder
+model_path = os.path.join('prod_deployment_path', 'model.pkl')
+sk_pipe = pickle.load(open(model_path, 'rb'))
+logging.info('Get prod mlflow model: SUCCESS')
 
 
 @app.get('/')
@@ -86,51 +76,38 @@ def income_pred(input_parameters: ModelInput):
     return 'The person is at risk of leaving the company'
 
 
-@app.get("/scoring")
+@app.get('/scoring')
 def score():
-    """
-    Scoring endpoint that runs the script scoring.py and
-    gets the score of the deployed model
-    Returns:
-        str: model f1 score
-    """
-    output = subprocess.run(['python', 'components/06_test_model/test_model.py'],
-                            capture_output=True).stdout
-    output = re.findall(r'f1 score = \d*\.?\d+', output.decode())[0]
-    return output
+    '''Check the f1 score of the deployed model on test data'''
+    # Read test dataset
+    test_data_path = os.path.join('test_data', 'testdata.csv')
+    test_data = pd.read_csv(test_data_path)
+    X_test = test_data.drop(['exited'], axis=1)
+    y_test = test_data['exited']
+
+    # make predictions
+    y_pred = sk_pipe.predict(X_test)
+
+    # score with f1 score
+    f1score = f1_score(y_test, y_pred)
+    return str(f1score)
 
 
-@app.get("/summarystats")
+@app.get('/summarystats')
 def stats():
-    """
-    Summary statistics endpoint that calls dataframe summary
-    function from diagnostics.py
-    Returns:
-        json: summary statistics
-    """
-    return diagnostics.dataframe_summary()
+    '''Check means, medians, and modes for each column'''
+    col_stats = summary_statistics()
+    return jsonable_encoder(col_stats)
 
 
 @app.get("/diagnostics")
-def diag():
-    """
-    Diagnostics endpoint thats calls missing_percentage, execution_time,
-    and outdated_package_list from diagnostics.py
-    Returns:
-        dict: missing percentage, execution time and outdated packages
-    """
-    missing = diagnostics.missing_percentage()
-    time = diagnostics.execution_time()
-    outdated = diagnostics.outdated_packages_list()
-
-    ret = {
-        'missing_percentage': missing,
-        'execution_time': time,
-        'outdated_packages': outdated
-    }
-
-    return ret
-
+def diagnostics():
+    '''Check timing and percent NA values, and dependencies'''
+    missing = check_missing_data()
+    time_check = execution_time()
+    outdated = outdated_packages_list()
+    diags = {'missing': missing, 'time_check': time_check, 'outdated': outdated}
+    return jsonable_encoder(diags)
 
 
 if __name__ == '__main__':
