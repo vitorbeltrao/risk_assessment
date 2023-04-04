@@ -25,7 +25,6 @@ _steps = [
 @hydra.main(version_base=None, config_path=".", config_name="config")
 def go(config: DictConfig) -> None:
     '''Main file that runs the entire pipeline end-to-end using hydra and mlflow
-
     :param config: (.yaml file)
     file that contains all the default data for the 
     entire machine learning pipeline to run
@@ -40,27 +39,27 @@ def go(config: DictConfig) -> None:
 
     if 'upload_raw_data' in active_steps:
         project_uri = f"{config['main']['components_repository']}/01_upload_raw_data"
-        mlflow.run(project_uri)
+        mlflow.run(project_uri, parameters={'steps': 'upload_raw_data'})
 
     if 'upload_trusted_data' in active_steps:
         project_uri = f"{config['main']['components_repository']}/02_upload_trusted_data"
-        mlflow.run(project_uri)
+        mlflow.run(project_uri, parameters={'steps': 'upload_trusted_data'})
 
     if 'basic_clean' in active_steps:
         project_uri = f"{config['main']['components_repository']}/03_basic_clean"
-        mlflow.run(project_uri)
+        mlflow.run(project_uri, parameters={'steps': 'basic_clean'})
 
     if 'data_check' in active_steps:
         project_uri = f"{config['main']['components_repository']}/04_data_check"
-        mlflow.run(project_uri)
+        mlflow.run(project_uri, parameters={'steps': 'data_check'})
 
     if 'train_model' in active_steps:
         project_uri = f"{config['main']['components_repository']}/05_train_model"
-        mlflow.run(project_uri)
+        mlflow.run(project_uri, parameters={'steps': 'train_model'})
 
     if 'test_model' in active_steps:
         project_uri = f"{config['main']['components_repository']}/06_test_model"
-        mlflow.run(project_uri)
+        mlflow.run(project_uri, parameters={'steps': 'test_model'})
 
 
 if __name__ == "__main__":
