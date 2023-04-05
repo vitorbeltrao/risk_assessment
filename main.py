@@ -21,7 +21,8 @@ _steps = [
     'basic_clean',
     'data_check',
     'train_model',
-    'test_model']
+    'test_model',
+    'deployment']
 
 def main():
     '''Main file that runs the entire pipeline end-to-end using mlflow
@@ -62,6 +63,10 @@ def main():
     if 'test_model' in active_steps:
         project_uri = 'https://github.com/vitorbeltrao/risk_assessment#components/06_test_model'
         mlflow.run(project_uri, parameters={'steps': 'test_model'})
+
+    if 'deployment' in active_steps:
+        project_uri = 'https://github.com/vitorbeltrao/risk_assessment#components/07_deployment'
+        mlflow.run(project_uri, parameters={'steps': 'deployment'})
 
 if __name__ == "__main__":
     # call the main function
