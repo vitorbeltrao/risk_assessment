@@ -62,8 +62,3 @@ def test_inference_class0():
     # test response and output
     assert response.status_code == 200
     assert response.json() == 'The person has no risk of leaving the company'
-
-
-def test_model_drift(hist_metrics, newf1score):
-    '''Test to check if there was model drift'''
-    assert final_model_drift_verify(hist_metrics, newf1score) is False

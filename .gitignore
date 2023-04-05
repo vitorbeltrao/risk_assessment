@@ -137,3 +137,5 @@ notebooks/mlruns
 /artifacts
 /notebooks/*.csv
 components/07_deployment/artifacts
+/train_data
+/test_data
