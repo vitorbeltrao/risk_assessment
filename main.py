@@ -7,39 +7,65 @@ Date: March/2023
 '''
 
 # import necessary packages
+import argparse
 import os
-import subprocess
+import mlflow
 
-# Steps to execute
 _steps = [
-    '01_upload_raw_data',
-    '02_upload_trusted_data',
-    '03_basic_clean',
-    '04_data_check',
-    '05_train_model',
-    '06_test_model',
-    '07_deployment'
+    'upload_raw_data',
+    'upload_trusted_data',
+    'basic_clean',
+    'data_check',
+    'train_model',
+    'test_model',
+    'deployment'
 ]
 
-def run_step(step):
-    '''Runs the specified step using MLflow'''
-    print(f"Running step: {step}")
-    component_dir = f"https://github.com/vitorbeltrao/risk_assessment/components/{step}"
-    subprocess.call(f"mlflow run {component_dir} -P steps={step}", shell=True)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--steps', type=str, default='all', help='Steps to execute')
+    parser.add_argument('--experiment_name', type=str, default='default_experiment', help='MLflow experiment name')
+    return parser.parse_args()
 
-def run_pipeline(steps):
-    '''Runs the pipeline with the specified steps'''
-    for step in steps:
-        run_step(step)
+def main(args):
+    # Setup the wandb experiment. All runs will be grouped under this name
+    os.environ['WANDB_PROJECT'] = 'risk_assessment'
+    os.environ['WANDB_RUN_GROUP'] = 'development'
+
+    # Steps to execute
+    steps_par = args.steps
+    active_steps = steps_par.split(',') if steps_par != 'all' else _steps
+
+    # Start MLflow run
+    with mlflow.start_run(run_name=args.experiment_name):
+        if 'upload_raw_data' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'upload_raw_data')
+
+        if 'upload_trusted_data' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'upload_trusted_data')
+
+        if 'basic_clean' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'basic_clean')
+
+        if 'data_check' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'data_check')
+
+        if 'train_model' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'train_model')
+
+        if 'test_model' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'test_model')
+
+        if 'deployment' in active_steps:
+            # Execute the code for this step
+            mlflow.log_param('step', 'deployment')
 
 if __name__ == "__main__":
-    # Get the steps to execute from the environment variable, or execute all steps by default
-    steps_par = os.getenv('STEPS', 'all')
-    active_steps = _steps if steps_par.lower() == 'all' else steps_par.split(',')
-
-    # Set the wandb environment variables
-    os.environ['WANDB_PROJECT'] = "risk_assessment"
-    os.environ['WANDB_RUN_GROUP'] = "pipeline_execution"
-
-    # Run the pipeline with the specified steps
-    run_pipeline(active_steps)
+    args = parse_args()
+    main(args)
