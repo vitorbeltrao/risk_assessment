@@ -7,68 +7,39 @@ Date: March/2023
 '''
 
 # import necessary packages
-import argparse
 import os
-import json
-import hydra
-import mlflow
-from omegaconf import DictConfig
+import subprocess
 
-# define argument parser
-parser = argparse.ArgumentParser()
-parser.add_argument('--steps', type=str, default='all', help='Steps to execute')
-
+# Steps to execute
 _steps = [
-    'upload_raw_data',
-    'upload_trusted_data',
-    'basic_clean',
-    'data_check',
-    'train_model',
-    'test_model']
+    '01_upload_raw_data',
+    '02_upload_trusted_data',
+    '03_basic_clean',
+    '04_data_check',
+    '05_train_model',
+    '06_test_model',
+    '07_deployment'
+]
 
-@hydra.main(version_base=None, config_path=".", config_name="config")
-def go(config: DictConfig) -> None:
-    '''Main file that runs the entire pipeline end-to-end using hydra and mlflow
-    :param config: (.yaml file)
-    file that contains all the default data for the 
-    entire machine learning pipeline to run
-    '''
-    # # Setup the wandb experiment. All runs will be grouped under this name
-    # os.environ['WANDB_PROJECT'] = config['main']['project_name']
-    # os.environ['WANDB_RUN_GROUP'] = config['main']['experiment_name']
+def run_step(step):
+    '''Runs the specified step using MLflow'''
+    print(f"Running step: {step}")
+    component_dir = f"https://github.com/vitorbeltrao/risk_assessment/components/{step}"
+    subprocess.call(f"mlflow run {component_dir} -P steps={step}", shell=True)
 
-    # Steps to execute
-    steps_par = config['main']['steps']
-    active_steps = steps_par.split(',') if steps_par != 'all' else _steps
-
-    if 'upload_raw_data' in active_steps:
-        project_uri = f"{config['main']['components_repository']}/01_upload_raw_data"
-        mlflow.run(project_uri, parameters={'steps': 'upload_raw_data'})
-
-    if 'upload_trusted_data' in active_steps:
-        project_uri = f"{config['main']['components_repository']}/02_upload_trusted_data"
-        mlflow.run(project_uri, parameters={'steps': 'upload_trusted_data'})
-
-    if 'basic_clean' in active_steps:
-        project_uri = f"{config['main']['components_repository']}/03_basic_clean"
-        mlflow.run(project_uri, parameters={'steps': 'basic_clean'})
-
-    if 'data_check' in active_steps:
-        project_uri = f"{config['main']['components_repository']}/04_data_check"
-        mlflow.run(project_uri, parameters={'steps': 'data_check'})
-
-    if 'train_model' in active_steps:
-        project_uri = f"{config['main']['components_repository']}/05_train_model"
-        mlflow.run(project_uri, parameters={'steps': 'train_model'})
-
-    if 'test_model' in active_steps:
-        project_uri = f"{config['main']['components_repository']}/06_test_model"
-        mlflow.run(project_uri, parameters={'steps': 'test_model'})
-
+def run_pipeline(steps):
+    '''Runs the pipeline with the specified steps'''
+    for step in steps:
+        run_step(step)
 
 if __name__ == "__main__":
-    # parse command line arguments
-    args = parser.parse_args()
+    # Get the steps to execute from the environment variable, or execute all steps by default
+    steps_par = os.getenv('STEPS', 'all')
+    active_steps = _steps if steps_par.lower() == 'all' else steps_par.split(',')
 
-    # pass command line arguments to the main function
-    go({'main': {'steps': args.steps}})
+    # Set the wandb environment variables
+    os.environ['WANDB_PROJECT'] = "risk_assessment"
+    os.environ['WANDB_RUN_GROUP'] = "pipeline_execution"
+
+    # Run the pipeline with the specified steps
+    run_pipeline(active_steps)
