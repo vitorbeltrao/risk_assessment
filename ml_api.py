@@ -13,9 +13,6 @@ import os
 import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel
-from fastapi.encoders import jsonable_encoder
-from sklearn.metrics import f1_score
-from diagnostics import summary_statistics, check_missing_data, execution_time, outdated_packages_list
 
 logging.basicConfig(
     level=logging.INFO,
@@ -74,40 +71,6 @@ def income_pred(input_parameters: ModelInput):
         return 'The person has no risk of leaving the company'
 
     return 'The person is at risk of leaving the company'
-
-
-@app.get('/scoring')
-def score():
-    '''Check the f1 score of the deployed model on test data'''
-    # Read test dataset
-    test_data_path = os.path.join('test_data', 'testdata.csv')
-    test_data = pd.read_csv(test_data_path)
-    X_test = test_data.drop(['exited'], axis=1)
-    y_test = test_data['exited']
-
-    # make predictions
-    y_pred = sk_pipe.predict(X_test)
-
-    # score with f1 score
-    f1score = f1_score(y_test, y_pred)
-    return str(f1score)
-
-
-@app.get('/summarystats')
-def stats():
-    '''Check means, medians, and modes for each column'''
-    col_stats = summary_statistics()
-    return jsonable_encoder(col_stats)
-
-
-@app.get("/diagnostics")
-def diagnostics():
-    '''Check timing and percent NA values, and dependencies'''
-    missing = check_missing_data()
-    time_check = execution_time()
-    outdated = outdated_packages_list()
-    diags = {'missing': missing, 'time_check': time_check, 'outdated': outdated}
-    return jsonable_encoder(diags)
 
 
 if __name__ == '__main__':
