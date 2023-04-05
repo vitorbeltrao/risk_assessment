@@ -1,20 +1,38 @@
 '''
-This file is for doing some checks on model drift
+This file is for doing some checks on model drift.
+If the result shows model drift, then the system 
+sends an email to the owner.
 
 Author: Vitor Abdo
 Date: March/2023
 '''
 
 # Import necessary packages
+import os
+import pickle
 import logging
 import pandas as pd
 import numpy as np
+import wandb
+import smtplib
+from decouple import config
+from sklearn.metrics import f1_score
 
 logging.basicConfig(
     level=logging.INFO,
     filemode='w',
     format='%(asctime)-15s - %(name)s - %(levelname)s - %(message)s')
 
+# start a new run at wandb
+run = wandb.init(
+    project='risk_assessment',
+    entity='vitorabdo',
+    job_type='check_model_drift')
+
+# config email informations: Set sender and recipient information
+FROM = config('FROM')
+TO = config('TO')
+PASS = config('PASS')
 
 def raw_comparison_test(hist_metrics: str, newf1score: int) -> bool:
     '''raw comparison: we simply check whether current 
@@ -131,3 +149,52 @@ def final_model_drift_verify(hist_metrics: str, newf1score: int) -> bool:
     else:
         print('False')
         return False
+
+
+if __name__ == '__main__':
+    logging.info('About to start the model drift check\n')
+
+    # download historical metrics dataset
+    previousscores = run.use_artifact('vitorabdo/risk_assessment/historical_metrics:latest', 
+                                      type='dataset').file()
+    
+    # get mlflow model
+    model_path = os.path.join('../prod_deployment_path', 'model.pkl')
+    sk_pipe = pickle.load(open(model_path, 'rb'))
+    
+    # download test dataset
+    test_data = run.use_artifact('vitorabdo/risk_assessment/test_set.csv:latest', 
+                                 type='dataset').file()
+    wandb.finish()
+    
+    # Read test dataset
+    test_data = pd.read_csv(test_data)
+    X_test = test_data.drop(['exited'], axis=1)
+    y_test = test_data['exited']
+
+    # making inference on test set
+    y_pred = sk_pipe.predict(X_test)
+    new_f1score = f1_score(y_test, y_pred)
+
+    # Test to check if there was model drift
+    result = final_model_drift_verify(previousscores, new_f1score)
+    if result is True:
+        logging.info('We dont have model drift: SUCCESS')
+    else:
+        logging.info('We have model drift: RETRAIN AND RE-DEPLOY THE MODEL')
+
+        # create message body and email subject
+        subject = 'We have model drift: RETRAIN AND RE-DEPLOY THE MODEL'
+        body = 'Check your system, as we have a possible model drift occurring.'
+
+        # connect to the SMTP server and login
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(FROM, PASS)
+
+        # create the message and send the email
+        message = f'Subject: {subject}\n\n{body}'
+        server.sendmail(FROM, TO, message)
+        server.quit()
+
+    logging.info('Done executing the model drift check')
