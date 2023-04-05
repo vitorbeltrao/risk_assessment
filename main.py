@@ -8,8 +8,11 @@ Date: March/2023
 
 # import necessary packages
 import argparse
-import os
 import mlflow
+
+# define argument parser
+parser = argparse.ArgumentParser()
+parser.add_argument('--steps', type=str, default='all', help='Steps to execute')
 
 _steps = [
     'upload_raw_data',
@@ -17,55 +20,50 @@ _steps = [
     'basic_clean',
     'data_check',
     'train_model',
-    'test_model',
-    'deployment'
-]
+    'test_model']
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--steps', type=str, default='all', help='Steps to execute')
-    parser.add_argument('--experiment_name', type=str, default='default_experiment', help='MLflow experiment name')
-    return parser.parse_args()
-
-def main(args):
-    # Setup the wandb experiment. All runs will be grouped under this name
-    os.environ['WANDB_PROJECT'] = 'risk_assessment'
-    os.environ['WANDB_RUN_GROUP'] = 'development'
+def main():
+    '''Main file that runs the entire pipeline end-to-end using mlflow
+    '''
 
     # Steps to execute
     steps_par = args.steps
     active_steps = steps_par.split(',') if steps_par != 'all' else _steps
 
-    # Start MLflow run
-    with mlflow.start_run(run_name=args.experiment_name):
-        if 'upload_raw_data' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'upload_raw_data')
+    if 'upload_raw_data' in active_steps:
+        project_uri = "https://github.com/vitorbeltrao/risk_assessment.git"
+        mlflow.run(project_uri, entry_point='components/01_upload_raw_data/main.py', 
+                   parameters={'steps': 'upload_raw_data'})
 
-        if 'upload_trusted_data' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'upload_trusted_data')
+    if 'upload_trusted_data' in active_steps:
+        project_uri = "https://github.com/vitorbeltrao/risk_assessment.git"
+        mlflow.run(project_uri, entry_point='components/02_upload_trusted_data/main.py', 
+                   parameters={'steps': 'upload_trusted_data'})
 
-        if 'basic_clean' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'basic_clean')
+    if 'basic_clean' in active_steps:
+        project_uri = "https://github.com/vitorbeltrao/risk_assessment.git"
+        mlflow.run(project_uri, entry_point='components/03_basic_clean/main.py', 
+                   parameters={'steps': 'basic_clean'})
 
-        if 'data_check' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'data_check')
+    if 'data_check' in active_steps:
+        project_uri = "https://github.com/vitorbeltrao/risk_assessment.git"
+        mlflow.run(project_uri, entry_point='components/04_data_check/main.py', 
+                   parameters={'steps': 'data_check'})
 
-        if 'train_model' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'train_model')
+    if 'train_model' in active_steps:
+        project_uri = "https://github.com/vitorbeltrao/risk_assessment.git"
+        mlflow.run(project_uri, entry_point='components/05_train_model/main.py', 
+                   parameters={'steps': 'train_model'})
 
-        if 'test_model' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'test_model')
+    if 'test_model' in active_steps:
+        project_uri = "https://github.com/vitorbeltrao/risk_assessment.git"
+        mlflow.run(project_uri, entry_point='components/06_test_model/main.py', 
+                   parameters={'steps': 'test_model'})
 
-        if 'deployment' in active_steps:
-            # Execute the code for this step
-            mlflow.log_param('step', 'deployment')
 
 if __name__ == "__main__":
-    args = parse_args()
-    main(args)
+    # parse command line arguments
+    args = parser.parse_args()
+
+    # pass command line arguments to the main function
+    main()
