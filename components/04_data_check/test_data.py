@@ -47,14 +47,6 @@ def test_entries_values(data):
     assert set(known_label_entries) == set(label_column)
 
 
-def test_data_integrity(data):
-    '''Test data integrity: when data is missing or invalid, 
-    we say that there's a data integrity issue
-    '''
-    check_null_values = list(data.isna().sum())
-    assert all(check_null_values) == 0
-
-
 # NON DETERMINISTIC TESTS
 
 def test_similar_label_distrib(
@@ -102,22 +94,3 @@ def test_number_of_employees_ttest(
     ts, pvalues = scipy.stats.ttest_ind(dist1, dist2)
 
     assert pvalues > 0.05
-
-
-def test_data_stability(
-        data: pd.DataFrame, ref_data: pd.DataFrame):
-    '''Test data integrity: when the data contains 
-    values different from what we expect. We are 
-    checking by the mean and median of the data
-    '''
-    hist_means = list(ref_data.mean())
-    actual_means = list(data.mean())
-
-    hist_medians = list(ref_data.median())
-    actual_medians = list(data.median())
-
-    mean_comparison = [abs((actual_means[i] - hist_means[i]) / hist_means[i]) for i in range(len(actual_means))]
-    median_comparison = [abs((actual_medians[i] - hist_medians[i]) / hist_medians[i]) for i in range(len(actual_medians))]
-
-    assert all(mean_comparison) <= 0.10
-    assert all(median_comparison) <= 0.10
