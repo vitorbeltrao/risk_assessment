@@ -53,7 +53,7 @@ def main():
 
     if 'data_check' in active_steps:
         project_uri = 'https://github.com/vitorbeltrao/risk_assessment#components/04_data_check'
-        mlflow.run(project_uri, entry_point='components/04_data_check/test_data.py', parameters={'steps': 'data_check'})
+        mlflow.run(project_uri, entry_point='pytest test_data.py', parameters={'steps': 'data_check'})
 
     if 'train_model' in active_steps:
         project_uri = 'https://github.com/vitorbeltrao/risk_assessment#components/05_train_model'
