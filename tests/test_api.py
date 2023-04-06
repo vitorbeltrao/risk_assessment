@@ -9,7 +9,6 @@ Date: March/2023
 import json
 import logging
 from fastapi.testclient import TestClient
-from model_drift_check.model_drift_check import final_model_drift_verify
 from ml_api import app
 
 logging.basicConfig(
