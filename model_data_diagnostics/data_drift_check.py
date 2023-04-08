@@ -14,6 +14,7 @@ import os
 import pandas as pd
 import wandb
 from google.cloud import storage
+from decouple import config
 
 
 from evidently.report import Report
@@ -30,9 +31,9 @@ logging.basicConfig(
 
 # config
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:/Users/4YouSee/Desktop/personal_work/risk_assessment/risk-assessment-380822-38a40f93abec.json'
-BUCKET_NAME = 'risk_assessment_storage'
-FILE_PATH = 'trusted/train_data/train_set.csv'
-REF_DATASET = 'vitorabdo/risk_assessment/clean_data:reference'
+BUCKET_NAME = config('BUCKET_NAME')
+FILE_PATH = config('FILE_PATH')
+REF_DATASET = config('REF_DATASET')
 
 
 def read_gcs_csv_to_dataframe(bucket_name: str, file_path: str) -> pd.DataFrame:
