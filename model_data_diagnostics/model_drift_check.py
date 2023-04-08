@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
     # Test to check if there was model drift
     result = final_model_drift_verify(previousscores, new_f1score)
-    if result is True:
+    if result is False:
         logging.info('We dont have model drift: SUCCESS')
     else:
         logging.info('We have model drift: RETRAIN AND RE-DEPLOY THE MODEL')
