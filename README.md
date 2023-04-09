@@ -6,7 +6,7 @@
 2. [Files Description](#files)
 3. [Running Files](#running)
 4. [Using the API](#api)
-5. [Model Scoring and Model Drift](#scoring)
+5. [Model and Data Diagnostics](#diagnostics)
 6. [Orchestration](#orchestration)
 7. [Licensing and Authors](#licensingandauthors)
 ***
@@ -24,23 +24,25 @@ To carry out the project, it was necessary an architecture that met the low budg
 
 In "risk_assessment" repository we have:
 
-* **components**: Inside this folder, we have all the files needed to run the entire model pipeline, from raw data collection to final predictions for never-before-seen data. These are the final files for the production environment. Each component is a block in the model that performs some task and in general generates some output artifact to feed the next steps.
+* **components**: Inside this folder, we have all the files needed to run the entire model pipeline, from raw data collection to final predictions for never-before-seen data. These are the final files for the production environment. Each component is a block in the model that performs some task and in general generates some output artifact to feed the next steps. All these components are managed by *MLflow Projects*.
 
-* **infrastructure**: Inside that folder, we have the .py files needed to create the entire cloud structure. For this project, it was necessary to create a data lake with the "raw" and "trusted" layers and all this was done in Python by the Google cloud api.
+* **infrastructure**: Inside that folder, we have the .py files needed to create the entire cloud structure. For this project, it was necessary to create a data lake with the "raw" and "trusted" layers and all this was done in Python by the Google cloud api. Also, we made a script that moves data from the data lake to a data warehouse. This script is not being used in practice, but it might come in handy at some point.
 
 * **notebooks**: Inside this folder are the experimentation and prototyping notebooks for the entire project. Before creating all this current structure, we tested the project hypothesis with notebooks to verify its viability.
 
-* **tests**: Folder containing unit tests to verify that the API created to infer the machine learning model is returning the correct results. In addition, we also tested the model drift.
+* **tests**: Folder containing unit tests to verify that the API created to infer the machine learning model is returning the correct results. This is tested along the CI/CD mats with *Github Actions* so we only integrate and deploy the model to something that is working.
 
-* **model_drift_check**: Folder that contains the script that performs model drift checks in conjunction with pytest, whose tests are in the *tests* folder.
+* **model_data_diagnostics**: Folder that contains two scripts that monitor the model in production, checking the model drift and the data drift every day.
 
-* **main.py file**: Main script in Python that runs all the components. All this managed by *MLflow* and *Hydra*.
+* **prod_deployment_path**: Folder that contains the copy of the last files to be deployed in production or that contains some information relevant to the last model.
+
+* **main.py file**: Main script in Python that runs all the components. All this managed by *MLflow Projects*.
 
 * **ml_api.py file**: Script that creates the necessary methods for creating the API with the *FastAPI* library.
 
-* **conda.yaml file**: File that contains all the libraries and their respective versions so that the system works perfectly.
+* **scheduler.py**: This is the file that uses the *apscheduler* library to orchestrate our system, more details you can see in the "Orchestration" topic.
 
-* **config.yaml**: This is the file where we have the *Hydra* environment variables necessary for the components in main.py to work.
+* **conda.yaml file**: File that contains all the libraries and their respective versions so that the system works perfectly.
 
 * **environment.yaml**: This file is for creating a virtual *conda* environment. It contains all the necessary libraries and their respective versions to be created in this virtual environment.
 
@@ -115,9 +117,14 @@ We can directly use the existing pipeline to do the training process without the
 
 ## Using the API <a name="api"></a>
 
+To check the application documentation follow the [link](https://risk-assessment-system.onrender.com/docs)
+
+The url to the endpoint for making API requests is: https://risk-assessment-system.onrender.com/risk_assessment_prediction
 ***
 
-## Model Scoring and Model Drift <a name="scoring"></a>
+## Model and Data Diagnostics <a name="diagnostics"></a>
+
+### Model Drift
 
 To check the model score and check the model drift, we are doing it by the following process:
 
@@ -129,13 +136,30 @@ If your model begins to perform worse than it had before, then you're a victim o
 
 The file containing the detailed evaluation metrics, including the historical records of the test data evaluation, to verify the model drift, are being detailed in the [model card](https://github.com/vitorbeltrao/risk_assessment/blob/main/model_card.md).
 
-In the model_drift_check folder, we create the scripts that check the model drift through three functions: *Raw Comparison Test*, *Parametric Significance Test* and *Non-Parametric Outlier Test*. For more information on what each of these tests does, visit the respective folder with the scripts and see the documentation for the functions.
+In the *model_data_diagnostics* folder, we create the scripts that check the model drift through three functions: *Raw Comparison Test*, *Parametric Significance Test* and *Non-Parametric Outlier Test*. For more information on what each of these tests does, visit the respective folder with the scripts and see the documentation for the functions.
 
-Finally, after testing these three functions that verify the model drift, we choose by voting whether the model suffered model drift or not, that is, if two of these functions show model drift, then we have model drift and vice versa. We do this final check in the *tests* folder, with the help of *pytest*. If we don't have model drift, then we keep the current model in production; if we have model drift then we must retrain and re-deploy the model.
+Finally, after testing these three functions that verify the model drift, we choose by voting whether the model suffered model drift or not, that is, if two of these functions show model drift, then we have model drift and vice versa. If we don't have model drift, then we keep the current model in production; if we have model drift then we must retrain and re-deploy the model. **Our system automatically sends an email to the person in charge, in case the model drift occurs!**
+
+### Data Drift
+
+Data drift also happens at regular intervals. We have a reference dataset, which was the first dataset that we trained, validated and tested the model before going into production and everything went well on that dataset. Over time, more data enters the data lake and the idea here is to compare the entire historical dataset (reference + new data coming in regularly) with the reference dataset that was the first one we trained.
+
+To make this comparison, we used an open source library that is [Evidently](https://www.evidentlyai.com/). For more information read the documentation at the highlighted link. Finally, we generate HTML files with the entire report on the data drift for the user, which you can find in the [folder](https://github.com/vitorbeltrao/risk_assessment/tree/main/model_data_diagnostics) where we are checking the diagnostics.
 ***
 
 ## Orchestration <a name="orchestration"></a>
 
+The orchestration, for our system to work automatically, is all done with the help of the [apscheduler](https://apscheduler.readthedocs.io/en/3.x/) library. For more information read the documentation at the highlighted link. In addition to the apscheduler, we also use the windows task scheduler, for the system to run regularly (in our case daily).
+
+The algorithm that is in the *scheduler.py* file was designed with the following proposal:
+
+* Every day we run the function *upload_raw_data* and *upload_trusted_data* that are in the components folder.
+
+* After running the two previous functions in sequence, we run the two diagnostic files in parallel, referring to the model drift and the data drift.
+
+* If model drift occurs, the model is automatically retrained with the entire available training dataset. If the model drift does not happen, then the pipeline is interrupted and will run again the next day.
+
+**With that, we have a model working almost 100% automatically without much manual intervention on the part of those responsible. Of course, it is recommended that sometimes those responsible take a look at the reports, to verify that everything is fine**.
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>
