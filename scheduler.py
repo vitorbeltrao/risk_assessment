@@ -13,11 +13,11 @@ def run_mlflow():
     subprocess.run(['mlflow', 'run', '.', '-P', 'steps=upload_raw_data,upload_trusted_data'])
 
 def run_diagnostics():
-    subprocess.Popen('python model_data_diagnostics/data_drift_check.py')
-    subprocess.Popen('python model_data_diagnostics/model_drift_check.py')
+    subprocess.run('python model_data_diagnostics/data_drift_check.py')
+    subprocess.run('python model_data_diagnostics/model_drift_check.py')
 
 def run_mlflow_if_model_drift():
-    with open('model_drift_check_result.txt', 'r') as f:
+    with open('model_data_diagnostics/model_drift_check_result.txt', 'r') as f:
         result = f.read().strip()
         if result == 'True':
             subprocess.run(['mlflow', 'run', '.'])

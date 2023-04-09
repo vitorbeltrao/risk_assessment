@@ -107,7 +107,7 @@ if __name__ == '__main__':
     ])
 
     report.run(reference_data=reference, current_data=current)
-    report.save_html('data_drift_report.html')
+    report.save_html('model_data_diagnostics/data_drift_report.html')
     logging.info('Generate data drift report: SUCCESS')
 
     # generate evidently data stability report
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     ])
 
     tests.run(reference_data=reference, current_data=current)
-    tests.save_html('data_stability_report.html')
+    tests.save_html('model_data_diagnostics/data_stability_report.html')
     logging.info('Generate data stability report: SUCCESS')
 
     logging.info('Done executing the data drift check')

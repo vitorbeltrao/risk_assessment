@@ -9,6 +9,7 @@ Date: March/2023
 
 # Import necessary packages
 import os
+import sys
 import pickle
 import logging
 import pandas as pd
@@ -159,7 +160,7 @@ if __name__ == '__main__':
                                       type='dataset').file()
     
     # get mlflow model
-    model_path = os.path.join('../prod_deployment_path', 'model.pkl')
+    model_path = os.path.join('prod_deployment_path', 'model.pkl')
     sk_pipe = pickle.load(open(model_path, 'rb'))
     
     # download test dataset
@@ -177,7 +178,11 @@ if __name__ == '__main__':
     new_f1score = f1_score(y_test, y_pred)
 
     # Test to check if there was model drift
+    metrics_filename = open('model_data_diagnostics/model_drift_check_result.txt', 'w') # create this txt only to feed scheduler.py script
+    sys.stdout = metrics_filename
     result = final_model_drift_verify(previousscores, new_f1score)
+    metrics_filename.close()
+
     if result is False:
         logging.info('We dont have model drift: SUCCESS')
     else:
