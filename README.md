@@ -1,4 +1,4 @@
-# Dynamic Risk Assessment System - v0.0.1
+# Dynamic Risk Assessment System - v1.0.0
 
 ## Table of Contents
 
@@ -7,7 +7,7 @@
 3. [Running Files](#running)
 4. [Using the API](#api)
 5. [Model Scoring and Model Drift](#scoring)
-6. [Diagnosing and Fixing Operational Problems](#diagnosing)
+6. [Orchestration](#orchestration)
 7. [Licensing and Authors](#licensingandauthors)
 ***
 
@@ -134,19 +134,8 @@ In the model_drift_check folder, we create the scripts that check the model drif
 Finally, after testing these three functions that verify the model drift, we choose by voting whether the model suffered model drift or not, that is, if two of these functions show model drift, then we have model drift and vice versa. We do this final check in the *tests* folder, with the help of *pytest*. If we don't have model drift, then we keep the current model in production; if we have model drift then we must retrain and re-deploy the model.
 ***
 
-## Diagnosing and Fixing Operational Problems <a name="diagnosing"></a>
+## Orchestration <a name="orchestration"></a>
 
-In addition to the model drift, detailed in the previous step, we are also monitoring our system at the level of: *Timing ML Processes* and *Integrity and Stability Issues*.
-
-### Timing ML Processes
-
-We are timing the execution of some of the most important components for the system, which are: [upload raw data](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/01_upload_raw_data), [upload trusted data](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/02_upload_trusted_data) and [train model](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/05_train_model). With this, we can monitor the latency of the steps and take the necessary actions, in case this time makes the system unfeasible
-
-### Integrity and Stability Issues
-
-**Data integrity**, refers to the case when data is missing or invalid. We are tracking this step in the component [data_check](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/04_data_check). If we have a data integrity issue, the respective test will fail, and we will be able to take the necessary actions to fix it.
-
-**Data stability**, refers to the case when the data contains values ​​different from what we expect. We are tracking this step in the component [data_check](https://github.com/vitorbeltrao/risk_assessment/tree/main/components/04_data_check). If we have a data integrity issue, the respective test will fail, and we will be able to take the necessary actions to fix it.
 ***
 
 ## Licensing and Author <a name="licensingandauthors"></a>
