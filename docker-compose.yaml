@@ -1,0 +1,15 @@
+version: "3"
+services:
+  jenkins:
+    image: pyjenkins
+    container_name: jenkins_riskassessment
+    ports:
+      - "8000:8080"
+      - "50000:50000"
+    volumes:
+      - "./jenkins_home:/var/jenkins_home"
+      - "./risk_assessment:/risk_assessment"
+
+# To execute docker-compose run: "docker-compose up"
+# After that, run: "docker exec -it <CONTAINER ID> bash" --> to see the CONTAINER ID, run: "docker ps"
+# With a super user go to "/var/jenkins_home/secrets" folder and write: "cat initialAdminPassword" to get the key
